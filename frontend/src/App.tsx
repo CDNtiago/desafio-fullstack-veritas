@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import {
   DragDropProvider,
+  PointerSensor,
   type DragOverEvent,
   type DragEndEvent,
 } from '@dnd-kit/react'
-import { Accessibility } from '@dnd-kit/dom'
+import { Accessibility, PointerActivationConstraints } from '@dnd-kit/dom'
 import { Icon } from './components/Icon'
 import { Column } from './tasks/Column'
 import { TaskCard } from './tasks/TaskCard'
@@ -30,8 +31,21 @@ const accessibility = Accessibility.configure({
   },
 })
 
+const cardPointerSensor = PointerSensor.configure({
+  activatorElements: (source) => (source.element ? [source.element] : []),
+  activationConstraints: (event) =>
+    event.pointerType === 'touch'
+      ? [new PointerActivationConstraints.Delay({ value: 220, tolerance: 6 })]
+      : [new PointerActivationConstraints.Distance({ value: 5 })],
+})
+
 export function App() {
   const board = useTasks()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(max-width: 900px)').matches,
+  )
   const [editor, setEditor] = useState<Task | 'new' | null>(null)
   const [deleting, setDeleting] = useState<Task | null>(null)
   const completed = board.tasks.filter((task) => task.status === 'done').length
@@ -40,16 +54,31 @@ export function App() {
     : 0
   const busy = board.pending !== null
   return (
-    <div className={styles.app}>
+    <div
+      className={`${styles.app} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}
+    >
       <a className={styles.skipLink} href="#quadro">
         Pular para o quadro
       </a>
-      <aside className={styles.sidebar} aria-label="Área de trabalho">
+      <button
+        type="button"
+        className={styles.sidebarBackdrop}
+        aria-label="Fechar menu lateral"
+        tabIndex={sidebarCollapsed ? -1 : 0}
+        onClick={() => setSidebarCollapsed(true)}
+      />
+      <aside
+        id="menu-lateral"
+        className={styles.sidebar}
+        aria-label="Menu lateral"
+        aria-hidden={sidebarCollapsed}
+        inert={sidebarCollapsed}
+      >
         <a className={styles.brand} href="#quadro">
           <span className={styles.brandMark} aria-hidden="true">
-            v
+            K
           </span>
-          veritas
+          Kanban
         </a>
         <span className={styles.navLabel}>QUADRO DE TAREFAS</span>
         <a href="#quadro" className={styles.navItem} aria-current="page">
@@ -57,7 +86,6 @@ export function App() {
           Meu quadro<span className={styles.navNumber}>01</span>
         </a>
         <div className={styles.sidebarNote}>
-          <span className={styles.noteSymbol}>↗</span>
           <p>
             Grandes ideias.
             <br />
@@ -72,9 +100,26 @@ export function App() {
       </aside>
       <div className={styles.workspace}>
         <header className={styles.topbar}>
-          <div>
+          <div className={styles.topbarLeading}>
+            <button
+              type="button"
+              className={styles.sidebarToggle}
+              aria-label={
+                sidebarCollapsed
+                  ? 'Mostrar menu lateral'
+                  : 'Ocultar menu lateral'
+              }
+              aria-expanded={!sidebarCollapsed}
+              aria-controls="menu-lateral"
+              onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+            >
+              <Icon
+                name={sidebarCollapsed ? 'sidebarOpen' : 'sidebarClose'}
+                size={17}
+              />
+            </button>
             <Icon name="board" size={16} />
-            <span>Veritas</span>
+            <span>Kanban</span>
             <span className={styles.separator}>/</span>
             <strong>Meu quadro</strong>
           </div>
@@ -147,6 +192,11 @@ export function App() {
             </p>
           </div>
           <DragDropProvider
+            sensors={(defaults) =>
+              defaults.map((sensor) =>
+                sensor === PointerSensor ? cardPointerSensor : sensor,
+              )
+            }
             plugins={(defaults) => [
               ...defaults.filter((plugin) => plugin !== Accessibility),
               accessibility,
