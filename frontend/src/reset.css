@@ -1,0 +1,12 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+button {
+  border: 0;
+}
+svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
