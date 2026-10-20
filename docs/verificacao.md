@@ -37,6 +37,7 @@ Revisão em 20/10/2026, contra o edital e as duas páginas do PDF de orientaçõ
 - Clone público sem credenciais, fora da pasta de trabalho, no commit `6adcc33`: `npm ci`, formatação, lint, 7 testes unitários, build, 4 E2E, `go test ./...` e `go vet ./...` aprovados no Windows.
 - [CI aprovada na revisão anterior](https://github.com/CDNtiago/desafio-fullstack-veritas/actions/runs/39502872448) no mesmo commit: backend Windows e Linux, race detector Linux, análise de vulnerabilidades, frontend/E2E e containers com verificação de persistência após reinício. Os resultados das revisões seguintes ficam em [Actions por commit](https://github.com/CDNtiago/desafio-fullstack-veritas/actions/workflows/ci.yml), acessíveis aos colaboradores enquanto o repositório estiver privado.
 - Build de produção servido pelo Nginx/Docker: criação, mudança para Concluídas, recarga e exclusão confirmadas no navegador; sem erros de JavaScript ou CSP no cenário executado.
+- A [CI da revisão visual e de segurança](https://github.com/CDNtiago/desafio-fullstack-veritas/actions/runs/39505720911), commit `3162857`, passou nas quatro etapas. Avisos de manutenção motivaram a atualização das Actions para Node 24, com SHAs conferidos nos repositórios oficiais, e dos aliases de ambiente para Ubuntu 24.04 e Windows Server 2025. O resultado dessa atualização está no histórico de Actions por commit.
 
 ## Documentação e entrega
 

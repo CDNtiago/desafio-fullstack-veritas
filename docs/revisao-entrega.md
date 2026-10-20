@@ -45,6 +45,7 @@ JSON continua adequado ao MVP de uma instância por arquivo. Ausência de login,
 4. **Estado da entrega:** README e matriz corrigidos para informar que o acesso privado é temporário e não satisfaz ainda a exigência de acesso público da banca.
 5. **Validação por teclado:** ao enviar um formulário inválido, o foco vai para o primeiro campo com erro, com a descrição acessível associada; testes de regressão incluídos.
 6. **Ambiente nativo:** a instalação Go existente foi registrada no PATH do usuário. Terminais já abertos podem precisar ser reabertos para receber a configuração.
+7. **Manutenção da CI:** a execução passou, mas apontou Actions com runtime Node 20 obsoleto. Foram selecionadas versões oficiais com Node 24, fixadas por SHA. Os ambientes agora usam `ubuntu-24.04` e `windows-2025`, evitando mudanças de versão principal por aliases `latest`.
 
 Resultados executados e links de CI ficam em [verificacao.md](verificacao.md).
 
