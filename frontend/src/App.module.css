@@ -23,9 +23,24 @@
   padding: 32px 20px 20px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  transition:
+    width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    flex-basis 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    opacity 180ms ease,
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sidebarCollapsed .sidebar {
-  display: none;
+  width: 0;
+  flex-basis: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border-right-color: transparent;
+  opacity: 0;
+  transform: translateX(-12px);
+  pointer-events: none;
 }
 .sidebarBackdrop {
   display: none;
@@ -640,8 +655,13 @@
   font-size: 13px;
 }
 .fields textarea {
-  resize: vertical;
-  min-height: 100px;
+  height: 128px;
+  min-height: 128px;
+  max-height: 128px;
+  overflow-y: auto;
+  resize: none;
+  scrollbar-color: var(--color-control-border) transparent;
+  scrollbar-width: thin;
 }
 .fields input[aria-invalid='true'],
 .fields textarea[aria-invalid='true'] {
@@ -725,11 +745,17 @@
     flex-basis: auto;
     min-height: 100dvh;
     box-shadow: 16px 0 40px #02141b35;
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 180ms ease;
   }
   .sidebarCollapsed .sidebar {
-    display: flex;
+    width: min(280px, 84vw);
+    flex-basis: auto;
+    padding: 32px 20px 20px;
+    border-right-color: var(--color-brand-mid);
     transform: translateX(-105%);
+    opacity: 0;
     pointer-events: none;
   }
   .sidebarBackdrop {
@@ -740,10 +766,11 @@
     border: 0;
     background: #02141b66;
     opacity: 1;
-    transition: opacity 180ms ease;
+    transition: opacity 220ms ease;
   }
   .sidebarCollapsed .sidebarBackdrop {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
   }
   .subtitle {
     max-width: 350px;

@@ -100,6 +100,7 @@ export function TaskForm({
             id={`${id}-description`}
             name="description"
             rows={4}
+            maxLength={2000}
             value={input.description}
             onChange={(e) =>
               setInput({ ...input, description: e.target.value })

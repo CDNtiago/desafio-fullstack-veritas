@@ -75,9 +75,6 @@ export function App() {
         inert={sidebarCollapsed}
       >
         <a className={styles.brand} href="#quadro">
-          <span className={styles.brandMark} aria-hidden="true">
-            K
-          </span>
           Kanban
         </a>
         <span className={styles.navLabel}>QUADRO DE TAREFAS</span>
