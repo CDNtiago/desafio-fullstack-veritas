@@ -73,6 +73,7 @@ func TestRejectManipulatedRequests(t *testing.T) {
 		{"unknown status", "POST", "/tasks", `{"title":"a","status":"admin"}`, nil, 400},
 		{"protected id", "POST", "/tasks", `{"title":"a","id":"x"}`, nil, 400},
 		{"protected date", "POST", "/tasks", `{"title":"a","createdAt":"2026-01-01"}`, nil, 400},
+		{"protected update date", "PUT", "/tasks/" + strings.Repeat("a", 32), `{"title":"a","description":"","status":"todo","updatedAt":"2026-01-01"}`, nil, 400},
 		{"case-sensitive keys", "POST", "/tasks", `{"Title":"a"}`, nil, 400},
 		{"null title", "POST", "/tasks", `{"title":null}`, nil, 400},
 		{"null description", "POST", "/tasks", `{"title":"a","description":null}`, nil, 400},
@@ -82,6 +83,7 @@ func TestRejectManipulatedRequests(t *testing.T) {
 		{"malformed", "POST", "/tasks", `{`, nil, 400},
 		{"trailing object", "POST", "/tasks", `{"title":"a"} {}`, nil, 400},
 		{"wrong type", "POST", "/tasks", `{"title":"a"}`, map[string]string{"Content-Type": "text/plain"}, 415},
+		{"missing content type", "POST", "/tasks", `{"title":"a"}`, map[string]string{"Content-Type": ""}, 415},
 		{"too large", "POST", "/tasks", strings.Repeat(" ", MaxBodyBytes+1), nil, 413},
 		{"invalid id", "DELETE", "/tasks/bad", "", nil, 400},
 		{"unknown id", "DELETE", "/tasks/" + strings.Repeat("a", 32), "", nil, 404},
@@ -121,6 +123,20 @@ func TestCORS(t *testing.T) {
 	w = request(api, "GET", "/tasks", "", nil)
 	if w.Header().Get("Access-Control-Allow-Origin") != "" || w.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Fatal(w)
+	}
+	for _, tc := range []struct {
+		name, method, header string
+		status               int
+	}{
+		{"unsupported method", "PATCH", "content-type", 405},
+		{"unsupported header", "POST", "content-type,x-custom-header", 403},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			w := request(api, "OPTIONS", "/tasks", "", map[string]string{"Origin": "http://localhost:5173", "Access-Control-Request-Method": tc.method, "Access-Control-Request-Headers": tc.header})
+			if w.Code != tc.status || w.Header().Get("Access-Control-Allow-Methods") != "" {
+				t.Fatalf("unsafe preflight: %d %s", w.Code, w.Body)
+			}
+		})
 	}
 }
 

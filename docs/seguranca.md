@@ -20,7 +20,7 @@ O servidor nativo escuta em `127.0.0.1`. No Compose, os containers escutam inter
 
 ## Persistência
 
-Mutações usam mutex, snapshot separado, arquivo temporário no mesmo diretório, `Sync`, fechamento e `Rename`. Só então a nova versão é publicada em memória. Nunca se remove o arquivo de destino antecipadamente. Arquivos corrompidos interrompem a inicialização, sem serem sobrescritos.
+Mutações usam mutex, snapshot separado, arquivo temporário no mesmo diretório, `Sync`, fechamento e `Rename`. Só então a nova versão é publicada em memória. Nunca se remove o arquivo de destino antecipadamente. Arquivos corrompidos interrompem a inicialização, sem serem sobrescritos. A leitura verifica UTF-8 antes de decodificar: o decodificador padrão do Go substituiria bytes inválidos silenciosamente; um teste de regressão garante a recusa e a preservação exata desses bytes.
 
 Uma instância do backend por arquivo. Sem transações distribuídas ou proteção contra dois processos gravando simultaneamente. A última atualização concluída da mesma tarefa prevalece. O arquivo é regravado integralmente, adequado a este MVP; não há limite artificial de quantidade de tarefas.
 

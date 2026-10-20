@@ -12,6 +12,7 @@ import (
 	"sort"
 	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 // JSONRepository serializes read-modify-write operations for one process and one file.
@@ -30,6 +31,10 @@ func OpenJSONRepository(path string) (*JSONRepository, error) {
 	}
 	if err != nil {
 		return nil, fmt.Errorf("read tasks: %w", err)
+	}
+	// encoding/json replaces malformed UTF-8; reject it to preserve corrupted data.
+	if !utf8.Valid(data) {
+		return nil, errors.New("task file contains invalid UTF-8")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"os"
@@ -104,6 +105,22 @@ func TestFailedWriteDoesNotPublish(t *testing.T) {
 	list, _ := s.List(ctx)
 	if string(before) != string(after) || len(list) != 1 || list[0] != created {
 		t.Fatal("failed write changed state")
+	}
+}
+
+func TestInvalidUTF8FilePreserved(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "tasks.json")
+	content := []byte(`[{"id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","title":"valid","description":"","status":"todo","createdAt":"2026-01-01T00:00:00Z","updatedAt":"2026-01-01T00:00:00Z"}]`)
+	content = bytes.Replace(content, []byte("valid"), []byte{0xff}, 1)
+	if err := os.WriteFile(path, content, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := OpenJSONRepository(path); err == nil {
+		t.Fatal("accepted invalid UTF-8 and silently replaced corrupted text")
+	}
+	got, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(got, content) {
+		t.Fatal("corrupted file was not preserved", err)
 	}
 }
 
