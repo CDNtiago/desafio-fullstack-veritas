@@ -24,6 +24,7 @@ export function TaskForm({
 }) {
   const id = useId()
   const titleRef = useRef<HTMLInputElement>(null)
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
     titleRef.current?.focus()
   }, [])
@@ -40,7 +41,11 @@ export function TaskForm({
     const fields = validate(input)
     setErrors(fields)
     setError('')
-    if (Object.keys(fields).length) return
+    if (Object.keys(fields).length) {
+      if (fields.title) titleRef.current?.focus()
+      else if (fields.description) descriptionRef.current?.focus()
+      return
+    }
     try {
       await onSave({ ...input, title: input.title.trim() })
       onClose()
@@ -91,6 +96,7 @@ export function TaskForm({
             Descrição <span className={styles.optional}>(opcional)</span>
           </label>
           <textarea
+            ref={descriptionRef}
             id={`${id}-description`}
             name="description"
             rows={4}

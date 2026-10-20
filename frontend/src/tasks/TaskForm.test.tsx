@@ -14,6 +14,7 @@ describe('TaskForm', () => {
     expect(
       screen.getByText('Informe um título de 1 a 120 caracteres.'),
     ).toBeVisible()
+    expect(screen.getByLabelText(/Título/)).toHaveFocus()
     await user.type(screen.getByLabelText(/Título/), '  Primeiro passo  ')
     await user.click(screen.getByRole('button', { name: 'Criar tarefa' }))
     await waitFor(() =>
@@ -45,6 +46,23 @@ describe('TaskForm', () => {
     expect(screen.getByLabelText(/Título/)).toHaveValue('Não perder')
     expect(screen.getByLabelText(/Descrição/)).toHaveValue('Minhas anotações')
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('focuses an invalid description so its error is reachable by keyboard', async () => {
+    const onSave = vi.fn()
+    const user = userEvent.setup()
+    render(<TaskForm busy={false} onSave={onSave} onClose={vi.fn()} />)
+    await user.type(screen.getByLabelText(/Título/), 'Planejar')
+    const description = screen.getByLabelText(/Descrição/)
+    await user.click(description)
+    await user.paste('x'.repeat(2001))
+    await user.click(screen.getByRole('button', { name: 'Criar tarefa' }))
+    expect(description).toHaveFocus()
+    expect(description).toHaveAttribute('aria-invalid', 'true')
+    expect(description).toHaveAccessibleDescription(
+      'Use no máximo 2.000 caracteres.',
+    )
+    expect(onSave).not.toHaveBeenCalled()
   })
 
   it('disables submitting and closing while pending', () => {
