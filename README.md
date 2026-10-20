@@ -2,6 +2,8 @@
 
 Um quadro simples para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**. Frontend em **React**, API em **Go** e persistência em **arquivo JSON**, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
 
+**Em revisão:** o repositório está privado por solicitação do candidato. A entrega exige acesso público; a visibilidade será alterada somente quando autorizada. Veja a [revisão e as pendências de entrega](docs/revisao-entrega.md).
+
 ![Interface com tarefas de demonstração](docs/quadro.png)
 
 A aplicação inicia vazia. A captura utiliza exemplos, não carregados automaticamente.
@@ -164,6 +166,7 @@ docs/                   User Flow, arquitetura, segurança e conformidade
 - **Responsabilidades:** handlers traduzem HTTP; serviço aplica regras; repositório cuida dos arquivos. A interface pequena permite testar cada responsabilidade.
 - **React, TypeScript e Vite:** tipagem estrita e build simples, sem roteador ou gerenciador global de estado.
 - **dnd-kit:** ponteiro e teclado, com seletor de status como alternativa explícita.
+- **Identidade visual:** azul-petróleo e dourado observados no [site de carreiras da Veritas](https://carreiras.veritas.law/), aplicados a uma área de trabalho clara. Cores centralizadas em variáveis CSS; tons auxiliares garantem contraste. A [referência visual](docs/identidade-visual.md) registra os valores e as adaptações.
 - **Consistência:** mutações da interface serializadas; respostas antigas descartadas. Erros de movimentação revertem o estado e consultam a API, sem repetir automaticamente mutações.
 - **Testes:** simulações restritas a testes de componentes/falhas; o E2E principal usa React, HTTP, Go e JSON reais. Sem MSW.
 
@@ -173,7 +176,7 @@ Veja [arquitetura](docs/arquitetura.md), [segurança](docs/seguranca.md) e [conf
 
 Quadro local único, sem login. Todos os clientes com acesso à API podem operar tarefas; CORS não autentica. Uma instância por arquivo; a última gravação concluída da mesma tarefa prevalece. A interface recarrega ao recuperar foco; não há colaboração em tempo real.
 
-O arquivo é regravado integralmente, com mutex, temporário, sincronização e substituição sem apagar antes o original. `Rename` não garante atomicidade no Windows; não há garantia transacional contra queda de energia. Arquivos inválidos impedem a inicialização, preservando o conteúdo.
+O arquivo é regravado integralmente, com mutex, temporário, sincronização e substituição sem apagar antes o original. `Rename` não garante atomicidade no Windows; não há garantia transacional contra queda de energia. Arquivos inválidos, inclusive com bytes UTF-8 corrompidos, impedem a inicialização, preservando o conteúdo.
 
 Para reiniciar dados nativos: pare a API, faça backup de `backend/data/tasks.json` e remova ou renomeie apenas esse arquivo. No próximo início o quadro estará vazio. Não edite o JSON enquanto o serviço estiver executando.
 
@@ -238,6 +241,6 @@ O script usa Mermaid CLI 12.0.0 e o Chromium instalado pelo Playwright; a primei
 
 Pesos oficiais: funcionalidade **40%**, arquitetura **25%**, UI/UX **15%**, documentação **15%**, Git **5%**. Exige-se nota mínima 7 e domínio mínimo; o projeto não promete nota específica.
 
-Entregar exclusivamente o link do repositório público **desafio-fullstack-veritas** pelo canal indicado pela empresa. README e imagem do User Flow ficam no próprio repositório, acessíveis sem login e sem solicitação de permissão. O edital menciona um formulário, cujo endereço não foi fornecido nos documentos recebidos. Confirmar o canal e o prazo efetivos antes do envio.
+Entregar exclusivamente o link do repositório público **desafio-fullstack-veritas** pelo canal indicado pela empresa. README e imagem do User Flow ficam no próprio repositório e deverão estar acessíveis sem login na entrega. Durante esta revisão, o acesso permanece privado. O edital menciona um formulário, cujo endereço não foi fornecido nos documentos recebidos. Confirmar o canal e o prazo efetivos antes do envio.
 
 A revisão também considerou o documento **DESAFIO TÉCNICO - ORIENTAÇÕES**, recebido em PDF: descrição opcional, título obrigatório, status válido, limitações e melhorias futuras no README. Arraste, JSON, Docker e testes são bônus opcionais nesse documento. A organização do backend preserva os nomes `main.go`, `handlers.go` e `models.go` apresentados nele, com serviço e repositório em arquivos separados para manter responsabilidades claras.

@@ -19,9 +19,9 @@ Fontes: `Desafio prático.txt` (edital), PDF **DESAFIO TÉCNICO - ORIENTAÇÕES*
 | Imagem obrigatória do User Flow | [`user-flow.png`](user-flow.png), incorporada ao README, com [fonte editável](user-flow.mmd) |
 | Fluxo de dados opcional | Diagrama em [arquitetura.md](arquitetura.md); não substitui o User Flow |
 | Bônus: arraste, JSON, Docker ou testes | Todos implementados e verificados; continuam opcionais no documento |
-| GitHub público, nome `desafio-fullstack-veritas` | Conferência de nome, visibilidade e leitura sem autenticação no registro de verificação |
-| Documentação acessível à banca | README e PNG dentro do repositório público, sem documento externo que exija convite |
-| Envio pelo canal indicado pela empresa | Link do repositório pronto para envio; formulário não consta nos documentos fornecidos |
+| GitHub público, nome `desafio-fullstack-veritas` | Nome correto; **publicação pendente por decisão do candidato**, que solicitou manter privado durante a revisão |
+| Documentação acessível à banca | README e PNG versionados; será necessário reconferir acesso sem login após autorizar a publicação |
+| Envio pelo canal indicado pela empresa | Pendente: confirmar canal/prazo e submeter o link; formulário não consta nos documentos fornecidos |
 | Git: commits claros | Histórico incremental de requisitos, backend, frontend, revisão e entrega |
 
 ## Critérios de avaliação
@@ -33,3 +33,5 @@ O comunicado chama o nome do repositório de preferencial; o edital e o PDF indi
 ## Revisões por etapa
 
 Requisitos, desenho, backend, frontend, interação, segurança, execução e documentação foram revisados contra as fontes recebidas. Os comandos realmente executados e as pendências externas ficam em [verificacao.md](verificacao.md).
+
+A [revisão de entrega](revisao-entrega.md) confronta também as decisões do plano e explicita o que depende do candidato antes da submissão.
