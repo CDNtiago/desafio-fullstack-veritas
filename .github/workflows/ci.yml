@@ -1,0 +1,99 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Format
+        shell: bash
+        working-directory: backend
+        run: test -z "$(gofmt -l .)"
+      - name: Test
+        working-directory: backend
+        run: go test ./...
+      - name: Vet
+        working-directory: backend
+        run: go vet ./...
+      - name: Race detection
+        if: runner.os == 'Linux'
+        working-directory: backend
+        run: go test -race ./...
+      - name: Vulnerability analysis
+        if: runner.os == 'Linux'
+        working-directory: backend
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Install and check
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run format:check
+          npm run lint
+          npm test
+          npm run build
+          npm audit --audit-level=high
+      - name: Real API end-to-end tests
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
+
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build and start
+        run: docker compose up --build -d --wait
+      - name: Smoke test and persistence
+        shell: bash
+        run: |
+          curl --fail http://localhost:5173/ > /dev/null
+          curl --fail http://localhost:8080/health
+          TASK=$(curl --fail -s -H 'Content-Type: application/json' -d '{"title":"CI persistence"}' http://localhost:8080/tasks)
+          ID=$(echo "$TASK" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+          docker compose restart backend
+          docker compose up -d --wait
+          curl --fail -s http://localhost:8080/tasks | python3 -c 'import json,sys; assert any(t["title"] == "CI persistence" for t in json.load(sys.stdin))'
+          curl --fail -X DELETE "http://localhost:8080/tasks/$ID"
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+      - name: Stop isolated CI services
+        if: always()
+        run: docker compose down --volumes
