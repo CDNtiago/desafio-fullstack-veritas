@@ -1,4 +1,4 @@
-package storage
+package main
 
 import (
 	"bytes"
@@ -12,20 +12,18 @@ import (
 	"sort"
 	"sync"
 	"time"
-
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/task"
 )
 
-// JSON serializes read-modify-write operations for one process and one file.
-type JSON struct {
+// JSONRepository serializes read-modify-write operations for one process and one file.
+type JSONRepository struct {
 	mu    sync.RWMutex
 	path  string
-	tasks []task.Task
+	tasks []Task
 	write func(string, []byte) error
 }
 
-func Open(path string) (*JSON, error) {
-	s := &JSON{path: path, tasks: []task.Task{}, write: writeSnapshot}
+func OpenJSONRepository(path string) (*JSONRepository, error) {
+	s := &JSONRepository{path: path, tasks: []Task{}, write: writeSnapshot}
 	data, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
 		return s, nil
@@ -43,8 +41,8 @@ func Open(path string) (*JSON, error) {
 	}
 	seen := make(map[string]bool, len(s.tasks))
 	for _, t := range s.tasks {
-		input, err := task.Validate(task.Input{Title: t.Title, Description: t.Description, Status: t.Status})
-		if err != nil || input.Title != t.Title || !task.ValidID(t.ID) || seen[t.ID] || t.CreatedAt.IsZero() || t.UpdatedAt.Before(t.CreatedAt) {
+		input, err := Validate(Input{Title: t.Title, Description: t.Description, Status: t.Status})
+		if err != nil || input.Title != t.Title || !ValidID(t.ID) || seen[t.ID] || t.CreatedAt.IsZero() || t.UpdatedAt.Before(t.CreatedAt) {
 			return nil, errors.New("task file contains invalid or duplicate tasks")
 		}
 		seen[t.ID] = true
@@ -53,7 +51,7 @@ func Open(path string) (*JSON, error) {
 	return s, nil
 }
 
-func sortTasks(tasks []task.Task) {
+func sortTasks(tasks []Task) {
 	sort.Slice(tasks, func(i, j int) bool {
 		if tasks[i].CreatedAt.Equal(tasks[j].CreatedAt) {
 			return tasks[i].ID < tasks[j].ID
@@ -62,34 +60,34 @@ func sortTasks(tasks []task.Task) {
 	})
 }
 
-func (s *JSON) List(ctx context.Context) ([]task.Task, error) {
+func (s *JSONRepository) List(ctx context.Context) ([]Task, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return append([]task.Task{}, s.tasks...), nil
+	return append([]Task{}, s.tasks...), nil
 }
 
-func (s *JSON) Create(ctx context.Context, t task.Task) (task.Task, error) {
+func (s *JSONRepository) Create(ctx context.Context, t Task) (Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for _, existing := range s.tasks {
 		if existing.ID == t.ID {
-			return task.Task{}, errors.New("duplicate generated id")
+			return Task{}, errors.New("duplicate generated id")
 		}
 	}
-	next := append(append([]task.Task{}, s.tasks...), t)
+	next := append(append([]Task{}, s.tasks...), t)
 	if err := s.commit(ctx, next); err != nil {
-		return task.Task{}, err
+		return Task{}, err
 	}
 	return t, nil
 }
 
-func (s *JSON) Update(ctx context.Context, id string, input task.Input, now time.Time) (task.Task, error) {
+func (s *JSONRepository) Update(ctx context.Context, id string, input Input, now time.Time) (Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	next := append([]task.Task{}, s.tasks...)
+	next := append([]Task{}, s.tasks...)
 	for i, t := range next {
 		if t.ID != id {
 			continue
@@ -101,29 +99,29 @@ func (s *JSON) Update(ctx context.Context, id string, input task.Input, now time
 		}
 		next[i] = t
 		if err := s.commit(ctx, next); err != nil {
-			return task.Task{}, err
+			return Task{}, err
 		}
 		return t, nil
 	}
-	return task.Task{}, task.ErrNotFound
+	return Task{}, ErrNotFound
 }
 
-func (s *JSON) Delete(ctx context.Context, id string) error {
+func (s *JSONRepository) Delete(ctx context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for i, t := range s.tasks {
 		if t.ID != id {
 			continue
 		}
-		next := append([]task.Task{}, s.tasks[:i]...)
+		next := append([]Task{}, s.tasks[:i]...)
 		next = append(next, s.tasks[i+1:]...)
 		return s.commit(ctx, next)
 	}
-	return task.ErrNotFound
+	return ErrNotFound
 }
 
 // Publish in memory only after persistence succeeds. Caller holds the write lock.
-func (s *JSON) commit(ctx context.Context, next []task.Task) error {
+func (s *JSONRepository) commit(ctx context.Context, next []Task) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}

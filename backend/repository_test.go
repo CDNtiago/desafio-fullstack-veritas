@@ -1,4 +1,4 @@
-package storage
+package main
 
 import (
 	"context"
@@ -8,34 +8,32 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/task"
 )
 
 func TestPersistenceLifecycle(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "data", "tasks.json")
-	repo, err := Open(path)
+	repo, err := OpenJSONRepository(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := task.NewService(repo)
+	s := NewService(repo)
 	ctx := context.Background()
 	initial, _ := s.List(ctx)
 	if initial == nil || len(initial) != 0 {
 		t.Fatal("expected non-nil empty list")
 	}
-	created, err := s.Create(ctx, task.Input{Title: "  Primeiro  ", Status: task.Todo})
+	created, err := s.Create(ctx, Input{Title: "  Primeiro  ", Status: Todo})
 	if err != nil {
 		t.Fatal(err)
 	}
-	updated, err := s.Update(ctx, created.ID, task.Input{Title: "Editado", Description: "Detalhes", Status: task.Done})
+	updated, err := s.Update(ctx, created.ID, Input{Title: "Editado", Description: "Detalhes", Status: Done})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if updated.ID != created.ID || !updated.CreatedAt.Equal(created.CreatedAt) || updated.UpdatedAt.Before(created.UpdatedAt) {
 		t.Fatal("immutable fields changed")
 	}
-	reloaded, err := Open(path)
+	reloaded, err := OpenJSONRepository(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +49,7 @@ func TestPersistenceLifecycle(t *testing.T) {
 	if err := s.Delete(ctx, created.ID); err != nil {
 		t.Fatal(err)
 	}
-	reloaded, err = Open(path)
+	reloaded, err = OpenJSONRepository(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +57,7 @@ func TestPersistenceLifecycle(t *testing.T) {
 	if len(list) != 0 {
 		t.Fatal("delete not persisted")
 	}
-	if err := s.Delete(ctx, created.ID); !errors.Is(err, task.ErrNotFound) {
+	if err := s.Delete(ctx, created.ID); !errors.Is(err, ErrNotFound) {
 		t.Fatal(err)
 	}
 }
@@ -71,7 +69,7 @@ func TestCorruptFilePreserved(t *testing.T) {
 			if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := Open(path); err == nil {
+			if _, err := OpenJSONRepository(path); err == nil {
 				t.Fatal("accepted corrupt file")
 			}
 			got, _ := os.ReadFile(path)
@@ -84,22 +82,22 @@ func TestCorruptFilePreserved(t *testing.T) {
 
 func TestFailedWriteDoesNotPublish(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "tasks.json")
-	repo, _ := Open(path)
-	s := task.NewService(repo)
+	repo, _ := OpenJSONRepository(path)
+	s := NewService(repo)
 	ctx := context.Background()
-	created, err := s.Create(ctx, task.Input{Title: "Original", Status: task.Todo})
+	created, err := s.Create(ctx, Input{Title: "Original", Status: Todo})
 	if err != nil {
 		t.Fatal(err)
 	}
 	before, _ := os.ReadFile(path)
 	repo.write = func(string, []byte) error { return errors.New("simulated disk failure") }
-	if _, err := s.Update(ctx, created.ID, task.Input{Title: "Changed", Status: task.Done}); err == nil {
+	if _, err := s.Update(ctx, created.ID, Input{Title: "Changed", Status: Done}); err == nil {
 		t.Fatal("update succeeded")
 	}
 	if err := s.Delete(ctx, created.ID); err == nil {
 		t.Fatal("delete succeeded")
 	}
-	if _, err := s.Create(ctx, task.Input{Title: "Extra", Status: task.Todo}); err == nil {
+	if _, err := s.Create(ctx, Input{Title: "Extra", Status: Todo}); err == nil {
 		t.Fatal("create succeeded")
 	}
 	after, _ := os.ReadFile(path)
@@ -111,20 +109,20 @@ func TestFailedWriteDoesNotPublish(t *testing.T) {
 
 func TestConcurrentMutations(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "tasks.json")
-	repo, _ := Open(path)
-	s := task.NewService(repo)
+	repo, _ := OpenJSONRepository(path)
+	s := NewService(repo)
 	ctx := context.Background()
 	var wg sync.WaitGroup
 	for i := 0; i < 30; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			created, err := s.Create(ctx, task.Input{Title: "Concurrent", Status: task.Todo})
+			created, err := s.Create(ctx, Input{Title: "Concurrent", Status: Todo})
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			if _, err := s.Update(ctx, created.ID, task.Input{Title: "Updated", Status: task.Done}); err != nil {
+			if _, err := s.Update(ctx, created.ID, Input{Title: "Updated", Status: Done}); err != nil {
 				t.Error(err)
 			}
 			if _, err := s.List(ctx); err != nil {
@@ -133,7 +131,7 @@ func TestConcurrentMutations(t *testing.T) {
 		}()
 	}
 	wg.Wait()
-	reloaded, err := Open(path)
+	reloaded, err := OpenJSONRepository(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +140,7 @@ func TestConcurrentMutations(t *testing.T) {
 		t.Fatalf("lost writes: %d", len(list))
 	}
 	for _, item := range list {
-		if item.Status != task.Done {
+		if item.Status != Done {
 			t.Fatal("lost update")
 		}
 	}
@@ -168,10 +166,10 @@ func TestSnapshotFailureKeepsDestination(t *testing.T) {
 }
 
 func TestCancelledMutation(t *testing.T) {
-	repo, _ := Open(filepath.Join(t.TempDir(), "tasks.json"))
+	repo, _ := OpenJSONRepository(filepath.Join(t.TempDir(), "tasks.json"))
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if _, err := repo.Create(ctx, task.Task{ID: "a", CreatedAt: time.Now()}); !errors.Is(err, context.Canceled) {
+	if _, err := repo.Create(ctx, Task{ID: "a", CreatedAt: time.Now()}); !errors.Is(err, context.Canceled) {
 		t.Fatal(err)
 	}
 	list, _ := repo.List(context.Background())

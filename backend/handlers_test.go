@@ -1,4 +1,4 @@
-package httpapi
+package main
 
 import (
 	"encoding/json"
@@ -10,18 +10,15 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/storage"
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/task"
 )
 
 func testAPI(t *testing.T) http.Handler {
 	t.Helper()
-	repo, err := storage.Open(filepath.Join(t.TempDir(), "tasks.json"))
+	repo, err := OpenJSONRepository(filepath.Join(t.TempDir(), "tasks.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	return New(task.NewService(repo), []string{"http://localhost:5173"}, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	return NewHandler(NewService(repo), []string{"http://localhost:5173"}, slog.New(slog.NewTextHandler(io.Discard, nil)))
 }
 func request(api http.Handler, method, path, body string, headers map[string]string) *httptest.ResponseRecorder {
 	r := httptest.NewRequest(method, path, strings.NewReader(body))
@@ -45,14 +42,14 @@ func TestCRUD(t *testing.T) {
 	if w.Code != 201 {
 		t.Fatal(w)
 	}
-	var created task.Task
+	var created Task
 	if err := json.Unmarshal(w.Body.Bytes(), &created); err != nil {
 		t.Fatal(err)
 	}
-	if created.Title != "Planejar" || created.Status != task.Todo || !task.ValidID(created.ID) {
+	if created.Title != "Planejar" || created.Status != Todo || !ValidID(created.ID) {
 		t.Fatal(created)
 	}
-	for _, status := range []string{task.InProgress, task.Done, task.Todo} {
+	for _, status := range []string{InProgress, Done, Todo} {
 		w = request(api, "PUT", "/tasks/"+created.ID, `{"title":"Editado","description":"Teste","status":"`+status+`"}`, nil)
 		if w.Code != 200 {
 			t.Fatal(w)
@@ -129,7 +126,7 @@ func TestCORS(t *testing.T) {
 
 func TestPersistenceErrorIsPrivateAndDoesNotMutate(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "tasks.json")
-	repo, err := storage.Open(path)
+	repo, err := OpenJSONRepository(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +134,7 @@ func TestPersistenceErrorIsPrivateAndDoesNotMutate(t *testing.T) {
 	if err := os.Mkdir(path, 0700); err != nil {
 		t.Fatal(err)
 	}
-	api := New(task.NewService(repo), nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	api := NewHandler(NewService(repo), nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	w := request(api, "POST", "/tasks", `{"title":"Not persisted"}`, nil)
 	if w.Code != 500 || strings.Contains(w.Body.String(), path) || strings.Contains(w.Body.String(), "rename") {
 		t.Fatalf("unsafe persistence error: %d %s", w.Code, w.Body)

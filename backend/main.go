@@ -11,10 +11,6 @@ import (
 	"strings"
 	"syscall"
 	"time"
-
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/httpapi"
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/storage"
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/task"
 )
 
 func env(name, fallback string) string {
@@ -40,13 +36,13 @@ func run(logger *slog.Logger) error {
 		}
 		origins[i] = origin
 	}
-	repo, err := storage.Open(env("TASKS_FILE", "data/tasks.json"))
+	repo, err := OpenJSONRepository(env("TASKS_FILE", "data/tasks.json"))
 	if err != nil {
 		return err
 	}
 	server := &http.Server{
 		Addr:              env("HTTP_ADDR", "127.0.0.1:8080"),
-		Handler:           httpapi.New(task.NewService(repo), origins, logger),
+		Handler:           NewHandler(NewService(repo), origins, logger),
 		ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second,
 		WriteTimeout: 15 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 8 * 1024,
 	}

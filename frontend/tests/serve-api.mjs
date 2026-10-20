@@ -10,7 +10,7 @@ import { fileURLToPath, URL } from 'node:url'
 const directory = mkdtempSync(join(tmpdir(), 'veritas-e2e-'))
 const binary = join(directory, process.platform === 'win32' ? 'api.exe' : 'api')
 const cwd = fileURLToPath(new URL('../../backend/', import.meta.url))
-const build = spawnSync('go', ['build', '-o', binary, './cmd/api'], {
+const build = spawnSync('go', ['build', '-o', binary, '.'], {
   cwd,
   stdio: 'inherit',
 })

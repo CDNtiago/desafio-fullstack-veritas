@@ -1,4 +1,4 @@
-package httpapi
+package main
 
 import (
 	"bytes"
@@ -10,19 +10,17 @@ import (
 	"net/http"
 	"strings"
 	"unicode/utf8"
-
-	"github.com/CDNtiago/desafio-fullstack-veritas/backend/internal/task"
 )
 
 const MaxBodyBytes = 16 * 1024
 
 type API struct {
-	service *task.Service
+	service *Service
 	origins map[string]bool
 	logger  *slog.Logger
 }
 
-func New(service *task.Service, origins []string, logger *slog.Logger) http.Handler {
+func NewHandler(service *Service, origins []string, logger *slog.Logger) http.Handler {
 	allowed := make(map[string]bool, len(origins))
 	for _, origin := range origins {
 		allowed[origin] = true
@@ -121,11 +119,11 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	failure(w, 404, "not_found", "Rota não encontrada.", nil)
 }
 
-func readInput(w http.ResponseWriter, r *http.Request, update bool) (task.Input, bool) {
+func readInput(w http.ResponseWriter, r *http.Request, update bool) (Input, bool) {
 	media, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil || media != "application/json" {
 		failure(w, 415, "unsupported_media_type", "Envie application/json.", nil)
-		return task.Input{}, false
+		return Input{}, false
 	}
 	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, MaxBodyBytes))
 	if err != nil {
@@ -135,28 +133,28 @@ func readInput(w http.ResponseWriter, r *http.Request, update bool) (task.Input,
 		} else {
 			failure(w, 400, "invalid_json", "Não foi possível ler o JSON.", nil)
 		}
-		return task.Input{}, false
+		return Input{}, false
 	}
 	var fields map[string]json.RawMessage
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	if !utf8.Valid(data) || decoder.Decode(&fields) != nil || fields == nil || decoder.Decode(new(any)) != io.EOF {
 		failure(w, 400, "invalid_json", "Envie um único objeto JSON válido.", nil)
-		return task.Input{}, false
+		return Input{}, false
 	}
-	input := task.Input{Status: task.Todo}
+	input := Input{Status: Todo}
 	values := map[string]*string{"title": &input.Title, "description": &input.Description, "status": &input.Status}
 	for key, raw := range fields {
 		destination, allowed := values[key]
 		if !allowed || bytes.Equal(bytes.TrimSpace(raw), []byte("null")) || json.Unmarshal(raw, destination) != nil {
 			failure(w, 400, "invalid_field", "Campos desconhecidos ou valores inválidos.", nil)
-			return task.Input{}, false
+			return Input{}, false
 		}
 	}
 	if update {
 		for key := range values {
 			if _, exists := fields[key]; !exists {
 				failure(w, 400, "missing_field", "PUT exige title, description e status.", nil)
-				return task.Input{}, false
+				return Input{}, false
 			}
 		}
 	}
@@ -164,11 +162,11 @@ func readInput(w http.ResponseWriter, r *http.Request, update bool) (task.Input,
 }
 
 func (a *API) error(w http.ResponseWriter, err error) {
-	var validation *task.ValidationError
+	var validation *ValidationError
 	switch {
 	case errors.As(err, &validation):
 		failure(w, 400, "validation_error", validation.Error(), validation.Fields)
-	case errors.Is(err, task.ErrNotFound):
+	case errors.Is(err, ErrNotFound):
 		failure(w, 404, "task_not_found", "Tarefa não encontrada. Atualize o quadro.", nil)
 	default:
 		a.logger.Error("request failed", "error", err)
