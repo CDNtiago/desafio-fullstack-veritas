@@ -17,6 +17,9 @@ backend/bin/
 Thumbs.db
 tmp/
 
+# Uso apenas local para estudar e preparar a apresentação técnica.
+/estudo-local/
+
 # Mantenho aqui as anotações e materiais de estudo; só o User Flow é exigido no desafio.
 docs/*
 !docs/user-flow.png
