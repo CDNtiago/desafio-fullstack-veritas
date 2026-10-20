@@ -1,6 +1,6 @@
 # Referência visual
 
-Referência consultada em 20/10/2026: [Veritas Carreiras](https://carreiras.veritas.law/). Os valores abaixo foram lidos nos estilos da página e conferidos visualmente. São referências observadas no site, não um manual oficial de marca.
+Usei o site [Veritas Carreiras](https://carreiras.veritas.law/) como referência visual em 20/10/2026. Li os valores abaixo nos estilos da página e conferi o resultado visualmente. São referências que observei no site, não um manual oficial de marca.
 
 | Cor observada | Valor | Uso no Mini Kanban |
 | --- | --- | --- |
@@ -11,7 +11,7 @@ Referência consultada em 20/10/2026: [Veritas Carreiras](https://carreiras.veri
 | Petróleo intermediário | `#273F49` | Navegação ativa na barra lateral |
 | Branco | `#FFFFFF` | Cartões e formulários |
 
-A área de trabalho permanece clara, conforme o plano. Fundos suaves e dourado escuro `#795B2C` são adaptações para legibilidade em superfícies claras. Não se usa dourado claro como texto pequeno sobre branco. Os estados também têm rótulos: a cor não é o único indicador de status, erro ou sucesso.
+Mantive a área de trabalho clara, conforme o plano, e adaptei os fundos e o dourado escuro `#795B2C` para legibilidade nessas superfícies. Evitei dourado claro em textos pequenos sobre branco. Os estados também têm rótulos: a cor não é o único indicador de status, erro ou sucesso.
 
 As variáveis estão em `frontend/src/global.css`, com aplicação em `App.module.css`. A tipografia usa fontes do sistema; não depende de baixar fontes ou executar código do site da empresa. O monograma V é um elemento do projeto, não uma reprodução do logotipo oficial.
 

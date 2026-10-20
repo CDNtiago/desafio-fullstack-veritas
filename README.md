@@ -1,8 +1,8 @@
 # Veritas · Mini Kanban
 
-Um quadro simples para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**. Frontend em **React**, API em **Go** e persistência em **arquivo JSON**, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
+Desenvolvi este Mini Kanban para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**, usando **React** no frontend, **Go** na API e **arquivo JSON** para persistência, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
 
-**Em revisão:** o repositório está privado por solicitação do candidato. A entrega exige acesso público; a visibilidade será alterada somente quando autorizada. Veja a [revisão e as pendências de entrega](docs/revisao-entrega.md).
+**Em revisão:** estou finalizando a revisão do projeto e mantenho o repositório privado até concluir essa etapa. Antes do envio, vou torná-lo público para permitir a avaliação. Registrei o que ainda falta na [revisão de entrega](docs/revisao-entrega.md).
 
 ![Interface com tarefas de demonstração](docs/quadro.png)
 
@@ -105,7 +105,7 @@ Em shells POSIX, use respectivamente `HTTP_ADDR=127.0.0.1:8093 ALLOWED_ORIGINS=h
 
 ## API
 
-O enunciado nomeia `/tasks`; adotamos o ID no caminho nas operações individuais.
+O enunciado nomeia `/tasks`; adotei o ID no caminho nas operações individuais.
 
 | Método | Rota | Corpo | Sucesso |
 | --- | --- | --- | --- |
@@ -161,12 +161,12 @@ frontend/
 docs/                   User Flow, arquitetura, segurança e conformidade
 ```
 
-- **Go com biblioteca padrão:** o escopo não necessita framework ou ORM; não há dependências externas no servidor de execução.
-- **JSON:** alternativa expressamente permitida. Leitura em memória; mutações confirmadas somente após gravar o arquivo.
-- **Responsabilidades:** handlers traduzem HTTP; serviço aplica regras; repositório cuida dos arquivos. A interface pequena permite testar cada responsabilidade.
-- **React, TypeScript e Vite:** tipagem estrita e build simples, sem roteador ou gerenciador global de estado.
-- **dnd-kit:** ponteiro e teclado, com seletor de status como alternativa explícita.
-- **Identidade visual:** azul-petróleo e dourado observados no [site de carreiras da Veritas](https://carreiras.veritas.law/), aplicados a uma área de trabalho clara. Cores centralizadas em variáveis CSS; tons auxiliares garantem contraste. A [referência visual](docs/identidade-visual.md) registra os valores e as adaptações.
+- **Go com biblioteca padrão:** optei por não adicionar framework ou ORM, pois a biblioteca padrão atende ao escopo. O servidor de execução não tem dependências externas.
+- **JSON:** escolhi uma alternativa permitida no desafio. Os dados são lidos em memória, e cada alteração só é confirmada após a gravação no arquivo.
+- **Responsabilidades:** separei HTTP nos handlers, regras no serviço e arquivos no repositório. A interface pequena permite testar cada responsabilidade.
+- **React, TypeScript e Vite:** usei tipagem estrita e um build simples. Para um quadro único, não precisei de roteador ou gerenciador global de estado.
+- **dnd-kit:** escolhi a biblioteca para oferecer arraste por ponteiro e teclado, mantendo o seletor de status como alternativa explícita.
+- **Identidade visual:** usei o azul-petróleo e o dourado observados no [site de carreiras da Veritas](https://carreiras.veritas.law/), mantendo a área de trabalho clara. Centralizei as cores em variáveis CSS e adaptei tons para contraste. Registrei os valores e as adaptações na [referência visual](docs/identidade-visual.md).
 - **Consistência:** mutações da interface serializadas; respostas antigas descartadas. Erros de movimentação revertem o estado e consultam a API, sem repetir automaticamente mutações.
 - **Testes:** simulações restritas a testes de componentes/falhas; o E2E principal usa React, HTTP, Go e JSON reais. Sem MSW.
 
@@ -239,8 +239,8 @@ O script usa Mermaid CLI 12.0.0 e o Chromium instalado pelo Playwright; a primei
 5. Demonstrar entrada inválida rejeitada pela API e explicar HTTP → serviço → JSON.
 6. Mostrar testes, User Flow e decisões técnicas.
 
-Pesos oficiais: funcionalidade **40%**, arquitetura **25%**, UI/UX **15%**, documentação **15%**, Git **5%**. Exige-se nota mínima 7 e domínio mínimo; o projeto não promete nota específica.
+Pesos oficiais: funcionalidade **40%**, arquitetura **25%**, UI/UX **15%**, documentação **15%**, Git **5%**. O edital exige nota mínima 7 e demonstração de domínio mínimo da solução.
 
-Entregar exclusivamente o link do repositório público **desafio-fullstack-veritas** pelo canal indicado pela empresa. README e imagem do User Flow ficam no próprio repositório e deverão estar acessíveis sem login na entrega. Durante esta revisão, o acesso permanece privado. O edital menciona um formulário, cujo endereço não foi fornecido nos documentos recebidos. Confirmar o canal e o prazo efetivos antes do envio.
+Vou enviar exclusivamente o link do repositório público **desafio-fullstack-veritas** pelo canal indicado pela empresa. Antes do envio, vou conferir o acesso sem login ao código, ao README e à imagem do User Flow. Até concluir a revisão, mantenho o repositório privado. Ainda preciso confirmar o canal e o prazo vigentes: o edital menciona um formulário, mas o endereço não consta nos documentos que recebi.
 
-A revisão também considerou o documento **DESAFIO TÉCNICO - ORIENTAÇÕES**, recebido em PDF: descrição opcional, título obrigatório, status válido, limitações e melhorias futuras no README. Arraste, JSON, Docker e testes são bônus opcionais nesse documento. A organização do backend preserva os nomes `main.go`, `handlers.go` e `models.go` apresentados nele, com serviço e repositório em arquivos separados para manter responsabilidades claras.
+Também conferi o projeto com o PDF **DESAFIO TÉCNICO - ORIENTAÇÕES**: descrição opcional, título obrigatório, status válido, limitações e melhorias futuras no README. Arraste, JSON, Docker e testes são bônus opcionais nesse documento. Mantive os nomes `main.go`, `handlers.go` e `models.go` apresentados nas orientações e separei serviço e repositório em arquivos próprios para manter as responsabilidades claras.

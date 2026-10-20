@@ -1,12 +1,12 @@
 # Registro de verificação
 
-Revisão em 20/10/2026, contra o edital e as duas páginas do PDF de orientações. Este registro descreve verificações executadas, sem promessa de nota ou ausência absoluta de vulnerabilidades.
+Em 20/10/2026, conferi o projeto com o edital e as duas páginas do PDF de orientações. Registrei abaixo as verificações executadas e os limites de cada uma.
 
-**Visibilidade atual: privada**, por solicitação do candidato. As verificações de acesso público abaixo são históricas, realizadas antes dessa mudança. Será necessário repeti-las após autorizar a publicação para a entrega.
+**Visibilidade atual: privada.** Mantenho o repositório privado enquanto concluo a revisão. Fiz as verificações de acesso público abaixo antes dessa mudança e vou repeti-las quando tornar o repositório público para a entrega.
 
 ## Ambiente e backend
 
-- Go 1.27.3 instalado a partir do arquivo oficial, com SHA-256 conferido; Node 24.19.0 e Docker disponíveis. Go registrado no PATH do usuário nesta revisão; reabrir terminais antigos para receber a alteração.
+- Instalei Go 1.27.3 a partir do arquivo oficial e conferi o SHA-256; Node 24.19.0 e Docker também estão disponíveis. Registrei Go no PATH da minha conta no Windows; terminais antigos precisam ser reabertos para receber a alteração.
 - `go test ./...` e `go vet ./...`: aprovados no Windows, inclusive após adequar a estrutura a `main.go`, `handlers.go`, `models.go`, `service.go` e `repository.go`.
 - CRUD, todas as transições, limites Unicode, IDs e campos protegidos, tipos inválidos, status, JSON malformado/adicional, mídia, corpo excessivo, rotas e métodos.
 - CORS: preflight, origem exata autorizada e origens/cabeçalhos recusados antes de alterar dados.
@@ -46,4 +46,4 @@ Revisão em 20/10/2026, contra o edital e as duas páginas do PDF de orientaçõ
 - Captura da interface inspecionada; matriz de conformidade cruza as fontes e as evidências.
 - [Repositório](https://github.com/CDNtiago/desafio-fullstack-veritas) com nome correto e branch padrão `main`. Na conferência inicial, antes de torná-lo privado, repositório, README e `docs/user-flow.png` responderam HTTP 200 sem autenticação; clone sem credenciais aprovado. Atualmente a visibilidade está confirmada como `PRIVATE`.
 - Submissão à empresa: não realizada. O endereço do formulário não está nos documentos recebidos.
-- Pendências atuais explicitadas em [revisao-entrega.md](revisao-entrega.md); nenhuma mudança de visibilidade será feita sem autorização do candidato.
+- Listei as pendências em [revisao-entrega.md](revisao-entrega.md). Vou manter o repositório privado até concluir a revisão.
