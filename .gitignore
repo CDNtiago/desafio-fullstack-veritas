@@ -12,5 +12,6 @@ backend/bin/
 *.test
 *.exe
 *.tmp
+*.tsbuildinfo
 .DS_Store
 Thumbs.db
