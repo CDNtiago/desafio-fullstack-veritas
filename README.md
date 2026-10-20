@@ -2,11 +2,7 @@
 
 Desenvolvi este Mini Kanban para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**, usando **React** no frontend, **Go** na API e **arquivo JSON** para persistência, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
 
-**Em revisão:** estou finalizando a revisão do projeto e mantenho o repositório privado até concluir essa etapa. Antes do envio, vou torná-lo público para permitir a avaliação. Registrei o que ainda falta na [revisão de entrega](docs/revisao-entrega.md).
-
-![Interface com tarefas de demonstração](docs/quadro.png)
-
-A aplicação inicia vazia. A captura utiliza exemplos, não carregados automaticamente.
+**Em revisão:** estou finalizando a revisão do projeto e mantenho o repositório privado até concluir essa etapa. Antes do envio, vou torná-lo público para permitir a avaliação.
 
 Com Git instalado, obtenha o código e escolha uma das formas de execução abaixo:
 
@@ -158,7 +154,7 @@ frontend/
   src/components/       ícones e modal
   src/tasks/            modelo, cliente HTTP, hook e componentes
   tests/                Playwright com API real e dados isolados
-docs/                   User Flow, arquitetura, segurança e conformidade
+docs/user-flow.png      diagrama obrigatório do fluxo de uso
 ```
 
 - **Go com biblioteca padrão:** optei por não adicionar framework ou ORM, pois a biblioteca padrão atende ao escopo. O servidor de execução não tem dependências externas.
@@ -166,11 +162,9 @@ docs/                   User Flow, arquitetura, segurança e conformidade
 - **Responsabilidades:** separei HTTP nos handlers, regras no serviço e arquivos no repositório. A interface pequena permite testar cada responsabilidade.
 - **React, TypeScript e Vite:** usei tipagem estrita e um build simples. Para um quadro único, não precisei de roteador ou gerenciador global de estado.
 - **dnd-kit:** escolhi a biblioteca para oferecer arraste por ponteiro e teclado, mantendo o seletor de status como alternativa explícita.
-- **Identidade visual:** usei o azul-petróleo e o dourado observados no [site de carreiras da Veritas](https://carreiras.veritas.law/), mantendo a área de trabalho clara. Centralizei as cores em variáveis CSS e adaptei tons para contraste. Registrei os valores e as adaptações na [referência visual](docs/identidade-visual.md).
+- **Identidade visual:** usei o azul-petróleo e o dourado observados no [site de carreiras da Veritas](https://carreiras.veritas.law/), mantendo a área de trabalho clara. Centralizei as cores em variáveis CSS e adaptei tons para contraste.
 - **Consistência:** mutações da interface serializadas; respostas antigas descartadas. Erros de movimentação revertem o estado e consultam a API, sem repetir automaticamente mutações.
 - **Testes:** simulações restritas a testes de componentes/falhas; o E2E principal usa React, HTTP, Go e JSON reais. Sem MSW.
-
-Veja [arquitetura](docs/arquitetura.md), [segurança](docs/seguranca.md) e [conformidade](docs/conformidade.md).
 
 ### Limitações e dados
 
@@ -214,21 +208,13 @@ npm run test:e2e
 
 No Linux, use `npx playwright install --with-deps chromium`. O E2E requer Go no PATH e portas **5174 e 8082** livres. Compila seu próprio binário e usa um diretório temporário do sistema, sem reutilizar serviços existentes nem alterar dados da aplicação. Diretórios temporários residuais podem permanecer após encerramento forçado no Windows.
 
-A CI verifica Go em Windows e Linux, race detector, frontend, E2E, auditorias e containers com reinício do backend. Resultados locais: [verificacao.md](docs/verificacao.md).
+A CI verifica Go em Windows e Linux, race detector, frontend, E2E, auditorias e containers com reinício do backend.
 
 ## User Flow
 
 ![Fluxo de uso com criação, edição, movimentação, exclusão, erros e cancelamentos](docs/user-flow.png)
 
-A imagem atende à exigência do enunciado; a [fonte Mermaid](docs/user-flow.mmd) permite edição. Para regenerar, dentro de `frontend`:
-
-```sh
-npm ci
-npx playwright install chromium
-npm run docs:flow
-```
-
-O script usa Mermaid CLI 12.0.0 e o Chromium instalado pelo Playwright; a primeira execução requer rede para obter o renderizador. Para regenerar a captura da interface, inicie uma instância de desenvolvimento vazia e execute `node scripts/capture.mjs` em `frontend`. O script cria cinco exemplos e remove apenas os que criou ao terminar. Use `CAPTURE_URL` e `CAPTURE_API_URL` para portas alternativas.
+Incluí a imagem obrigatória do fluxo de uso em `docs/user-flow.png`. Para gerar uma nova captura da interface, inicie uma instância de desenvolvimento vazia e execute `node scripts/capture.mjs` em `frontend`. O script cria cinco exemplos e remove apenas os que criou ao terminar. Use `CAPTURE_URL` e `CAPTURE_API_URL` para portas alternativas.
 
 ## Demonstração e entrega
 
