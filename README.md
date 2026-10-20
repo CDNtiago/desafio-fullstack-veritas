@@ -6,6 +6,13 @@ Um quadro simples para organizar tarefas em **A Fazer**, **Em Progresso** e **Co
 
 A aplicação inicia vazia. A captura utiliza exemplos, não carregados automaticamente.
 
+Com Git instalado, obtenha o código e escolha uma das formas de execução abaixo:
+
+```sh
+git clone https://github.com/CDNtiago/desafio-fullstack-veritas.git
+cd desafio-fullstack-veritas
+```
+
 ## Funcionalidades
 
 - Criar, editar e excluir tarefas com confirmação.
