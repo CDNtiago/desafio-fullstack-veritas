@@ -4,6 +4,20 @@ Em 20/10/2026, conferi o projeto com o edital e as duas páginas do PDF de orien
 
 **Visibilidade atual: privada.** Mantenho o repositório privado enquanto concluo a revisão. Fiz as verificações de acesso público abaixo antes dessa mudança e vou repeti-las quando tornar o repositório público para a entrega.
 
+## Conferência final em clone limpo
+
+Clonei novamente o repositório no commit `9ecd5ec44b0ff03a0ee4618aa2d21f332178097e`, em uma pasta temporária fora do projeto. Como o repositório está privado, usei o acesso autenticado; a conferência pública sem login continua pendente.
+
+- Reli as duas páginas do PDF e o edital e comparei os requisitos com o plano, os arquivos do projeto e os testes. Não identifiquei funcionalidades obrigatórias do MVP sem implementação.
+- Executei `gofmt`, `go test -count=1 -cover ./...`, `go vet ./...` e `govulncheck` 1.9.0 no Windows: todos passaram. A cobertura registrada foi de 79,2% das instruções Go; a análise não encontrou vulnerabilidades.
+- Instalei as dependências com `npm ci` e executei formatação, lint, os **8 testes unitários**, TypeScript, build de produção e auditoria npm: todos passaram, sem vulnerabilidades reportadas nessa execução.
+- Executei os **4 testes Playwright** com API Go e JSON reais: CRUD, movimentação, cancelamento, recuperação de falhas, teclado, texto seguro e viewport móvel passaram. Os cenários de acessibilidade verificados pelo Axe também passaram.
+- Conferi os links locais da documentação, os arquivos exigidos e a imagem PNG do User Flow. Inspecionei o diagrama e o quadro no navegador.
+- Construí e iniciei o Docker Compose a partir desse clone, usando um projeto e um volume exclusivos de teste nas portas 5185 e 8095. Conferi interface, criação, edição, mudança de status, persistência após reiniciar a API e exclusão. Ao terminar, removi somente os containers e o volume dessa verificação.
+- A [CI desse commit](https://github.com/CDNtiago/desafio-fullstack-veritas/actions/runs/39507136740) passou em backend Windows, backend Linux, frontend e containers, incluindo detecção de concorrência e persistência após reinício.
+
+Os testes usaram seus próprios arquivos temporários. Para a avaliação manual, iniciei o frontend em `http://127.0.0.1:5183/` e a API em `http://127.0.0.1:8093`, com CORS para a origem correspondente e persistência em `backend/data/tasks.json`, ignorado pelo Git. Usei as portas alternativas documentadas porque 5173 e 8080 já estavam ocupadas. Confirmei respostas HTTP 200, a saúde da API e o carregamento das três colunas no navegador.
+
 ## Ambiente e backend
 
 - Instalei Go 1.27.3 a partir do arquivo oficial e conferi o SHA-256; Node 24.19.0 e Docker também estão disponíveis. Registrei Go no PATH da minha conta no Windows; terminais antigos precisam ser reabertos para receber a alteração.

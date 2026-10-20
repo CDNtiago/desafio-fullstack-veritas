@@ -49,6 +49,12 @@ JSON continua adequado ao MVP de uma instância por arquivo. Ausência de login,
 
 Resultados executados e links de CI ficam em [verificacao.md](verificacao.md).
 
+## Conferência final
+
+Repeti a leitura do PDF e do edital e revisei o código contra o plano. Em um clone limpo do commit `9ecd5ec`, os testes Go, os 8 testes unitários da interface, os 4 testes de ponta a ponta, o build e as análises de dependências passaram. Repeti a execução pelo Docker Compose e confirmei que uma tarefa permaneceu salva após reiniciar a API. Também conferi a CI desse commit nos ambientes Windows e Linux e os arquivos obrigatórios da documentação. Registrei os comandos e os resultados na [verificação final](verificacao.md#conferência-final-em-clone-limpo).
+
+Não precisei alterar o código nesta conferência. Mantive o histórico já publicado e passei a escrever os novos commits em português. O ambiente de desenvolvimento está preparado nas portas 5183 e 8093 para a avaliação manual, com dados separados dos testes automatizados.
+
 ## O que ainda falta
 
 - [ ] Conferir o visual e praticar o [roteiro de demonstração](../README.md#demonstração-e-entrega), explicando fluxo de dados, JSON, validações, CORS e tratamento de falhas.
