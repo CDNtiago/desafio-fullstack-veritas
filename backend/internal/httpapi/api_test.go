@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -123,5 +124,26 @@ func TestCORS(t *testing.T) {
 	w = request(api, "GET", "/tasks", "", nil)
 	if w.Header().Get("Access-Control-Allow-Origin") != "" || w.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Fatal(w)
+	}
+}
+
+func TestPersistenceErrorIsPrivateAndDoesNotMutate(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "tasks.json")
+	repo, err := storage.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Force a real rename failure without relying on administrator-sensitive permissions.
+	if err := os.Mkdir(path, 0700); err != nil {
+		t.Fatal(err)
+	}
+	api := New(task.NewService(repo), nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	w := request(api, "POST", "/tasks", `{"title":"Not persisted"}`, nil)
+	if w.Code != 500 || strings.Contains(w.Body.String(), path) || strings.Contains(w.Body.String(), "rename") {
+		t.Fatalf("unsafe persistence error: %d %s", w.Code, w.Body)
+	}
+	w = request(api, "GET", "/tasks", "", nil)
+	if strings.TrimSpace(w.Body.String()) != "[]" {
+		t.Fatal("unpersisted task published")
 	}
 }
