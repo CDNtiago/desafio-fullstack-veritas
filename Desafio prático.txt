@@ -1,0 +1,32 @@
+ Desafio prático
+3.2.1 A prova prática consistirá no desenvolvimento de um desafio fullstack: a criação de um
+Mini Kanban de Tarefas utilizando React no frontend e Go no backend. O objetivo é avaliar a
+capacidade do(a) candidato(a) de desenvolver uma aplicação simples, fluida e documentar o
+fluxo de uso do sistema em um diagrama (User Flow).
+3.2.2 O projeto deverá contemplar o seguinte Escopo Mínimo (MVP):
+a. Frontend (React): Renderizar três colunas fixas (A Fazer, Em Progresso e Concluídas),
+permitir adicionar, editar, mover e excluir tarefas, além de apresentar feedbacks
+visuais mínimos e consumir dados via API.
+b. Backend (Go): Criação de endpoints RESTful (GET, POST, PUT, DELETE para /tasks),
+armazenamento em memória ou JSON, validações básicas e configuração de CORS
+para permitir acesso pelo frontend.
+3.2.3 O projeto deve ser enviado por meio de um repositório público no GitHub (com o nome
+"desafio-fullstack-veritas"). O repositório deve estar organizado com as pastas do backend,
+frontend e docs (contendo obrigatoriamente a imagem do user-flow), além de um arquivo
+README explicativo contendo instruções para rodar a aplicação e explicação sobre decisões
+técnicas tomadas.
+3.2.3 O desafio prático poderá ser enviado até 23h59min do dia 07 de agosto de 2026,
+cujas orientações estão contidas no formulário e o envio também ocorrerá por meio do
+formulário fornecido, respeitando as instruções e o prazo estabelecido.
+3.2.4 A banca examinadora irá corrigir a prova escrita, em sua totalidade, considerando os
+seguintes critérios:
+a. Funcionalidade (40%): CRUD completo e fluidez entre colunas.
+b. Código e Arquitetura (25%): clareza, organização e boas práticas.
+c. UI/UX (15%): experiência básica e intuitiva.
+d. Documentação (15%): clareza no README e User Flow.
+e. Git (5%): commits claros e bem estruturados.
+3.2.5 Será atribuída nota zero a respostas que não demonstrarem domínio mínimo do
+conteúdo solicitado.
+3.2.6 A nota final da segunda etapa do processo seletivo compreenderá os pontos do Desafio
+Prático, na qual deverá atingir-se o mínimo de 7 (sete) pontos para avançar para a próxima
+etapa
