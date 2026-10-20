@@ -15,3 +15,4 @@ backend/bin/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
+tmp/

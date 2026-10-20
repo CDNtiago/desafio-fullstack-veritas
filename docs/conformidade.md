@@ -1,25 +1,35 @@
 # Matriz de conformidade
 
-O enunciado original é a fonte de requisitos. Decisões auxiliares não são exigências da empresa.
+Fontes: `Desafio prático.txt` (edital), PDF **DESAFIO TÉCNICO - ORIENTAÇÕES** fornecido pelo candidato e comunicado sobre entrega pública. O PDF detalha o MVP e o README. Ferramentas auxiliares e limites adicionais são decisões da implementação, não exigências atribuídas à empresa.
 
-| Item | Requisito | Evidência prevista |
-| --- | --- | --- |
-| 3.2.1 | React e Go; aplicação simples e fluida | Frontend React, servidor Go, testes reais de ponta a ponta |
-| 3.2.2 a | A Fazer, Em Progresso, Concluídas | Quadro com três colunas fixas |
-| 3.2.2 a | Adicionar, editar, mover e excluir | Teste E2E do ciclo completo |
-| 3.2.2 a | Feedback e consumo de API | Estados da interface e cliente HTTP |
-| 3.2.2 b | GET, POST, PUT, DELETE para /tasks | Testes HTTP e contrato no README |
-| 3.2.2 b | Memória ou JSON | Repositório JSON e testes de reinício |
-| 3.2.2 b | Validação e CORS | Testes de entradas e origens |
-| 3.2.3 — repositório | GitHub público; nome exato | Conferência de acesso e nome na entrega |
-| 3.2.3 — organização | backend, frontend, docs e README | Estrutura versionada |
-| 3.2.3 — documentação | Imagem do User Flow, execução, decisões | PNG em docs e README reproduzível |
-| 3.2.3 — envio | Formulário | Conferir orientações externas antes do envio |
-| 3.2.4 | Funcionalidade 40%; arquitetura 25%; UX 15%; docs 15%; Git 5% | Revisão final e histórico incremental |
-| 3.2.5–6 | Domínio mínimo; nota mínima 7 | Roteiro de demonstração e explicação das decisões |
+| Requisito | Evidência implementada |
+| --- | --- |
+| React no frontend; Go no backend | `frontend/package.json`, `backend/go.mod`; E2E inicia ambos |
+| Três colunas fixas | `frontend/src/App.tsx`: A Fazer, Em Progresso, Concluídas |
+| Criar tarefa com título e descrição opcional | `TaskForm.tsx`, `models.go`, testes de formulário e HTTP |
+| Editar, mover e excluir | PUT/DELETE no backend; controles, arraste e confirmação na interface; E2E do ciclo completo |
+| Feedback de loading/erro e consumo da API | `useTasks.ts`, `api.ts`, estados pendentes, mensagens e preservação do formulário |
+| GET, POST, PUT, DELETE para `/tasks` | `backend/handlers.go`; contrato e rotas individuais por ID descritos no README |
+| Memória ou JSON | `backend/repository.go`: memória carregada de JSON, gravação a cada mutação; testes de recarga |
+| Título obrigatório e status válido | `backend/models.go`, validação também em chamadas externas à interface |
+| CORS | Origens exatas e preflight em `handlers.go`; testes de origens recusadas |
+| Pastas backend, frontend e docs | Estrutura versionada; `main.go`, `handlers.go`, `models.go` em backend, serviço e repositório em arquivos próprios |
+| README: execução e decisões | Instruções nativas, Docker, versões, variáveis, contrato e justificativas |
+| README: limitações e melhorias futuras | Seções específicas sobre JSON, ausência de login, concorrência e evolução |
+| Imagem obrigatória do User Flow | [`user-flow.png`](user-flow.png), incorporada ao README, com [fonte editável](user-flow.mmd) |
+| Fluxo de dados opcional | Diagrama em [arquitetura.md](arquitetura.md); não substitui o User Flow |
+| Bônus: arraste, JSON, Docker ou testes | Todos implementados e verificados; continuam opcionais no documento |
+| GitHub público, nome `desafio-fullstack-veritas` | Conferência de nome, visibilidade e leitura sem autenticação no registro de verificação |
+| Documentação acessível à banca | README e PNG dentro do repositório público, sem documento externo que exija convite |
+| Envio pelo canal indicado pela empresa | Link do repositório pronto para envio; formulário não consta nos documentos fornecidos |
+| Git: commits claros | Histórico incremental de requisitos, backend, frontend, revisão e entrega |
 
-A data impressa foi desconsiderada por orientação do candidato. O formulário não está neste repositório.
+## Critérios de avaliação
+
+Funcionalidade **40%**, código/arquitetura **25%**, UI/UX **15%**, documentação **15%** e Git **5%**. O edital exige nota mínima 7 e domínio mínimo. O [roteiro no README](../README.md#demonstração-e-entrega) permite explicar a solução e demonstrar os fluxos; não constitui garantia de nota.
+
+O comunicado chama o nome do repositório de preferencial; o edital e o PDF indicam `desafio-fullstack-veritas`. Utilizamos esse nome, atendendo às três fontes. As datas impressas foram desconsideradas por orientação do candidato; o prazo e o canal efetivos de submissão dependem da comunicação da empresa.
 
 ## Revisões por etapa
 
-Em cada etapa: reler o enunciado, revisar o diff, verificar o comportamento, atualizar documentação e produzir um commit coerente. Resultados executados serão registrados em `verificacao.md`.
+Requisitos, desenho, backend, frontend, interação, segurança, execução e documentação foram revisados contra as fontes recebidas. Os comandos realmente executados e as pendências externas ficam em [verificacao.md](verificacao.md).

@@ -37,7 +37,7 @@ const samples = [
 const browser = await chromium.launch()
 try {
   for (const [title, description, status] of samples) {
-    const response = await fetch(`${api}/tasks`, {
+    const response = await globalThis.fetch(`${api}/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description, status }),
@@ -76,7 +76,9 @@ try {
 } finally {
   await browser.close()
   for (const id of ids) {
-    const response = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' })
+    const response = await globalThis.fetch(`${api}/tasks/${id}`, {
+      method: 'DELETE',
+    })
     if (!response.ok)
       console.error(`Could not remove sample ${id}: ${response.status}`)
   }
