@@ -46,9 +46,12 @@ export function App() {
       </a>
       <aside className={styles.sidebar} aria-label="Área de trabalho">
         <a className={styles.brand} href="#quadro">
-          <span className={styles.brandMark}>v.</span>veritas
+          <span className={styles.brandMark} aria-hidden="true">
+            v
+          </span>
+          veritas
         </a>
-        <span className={styles.navLabel}>WORKSPACE</span>
+        <span className={styles.navLabel}>QUADRO DE TAREFAS</span>
         <a href="#quadro" className={styles.navItem} aria-current="page">
           <Icon name="board" />
           Meu quadro<span className={styles.navNumber}>01</span>
@@ -71,7 +74,7 @@ export function App() {
         <header className={styles.topbar}>
           <div>
             <Icon name="board" size={16} />
-            <span>Workspace</span>
+            <span>Veritas</span>
             <span className={styles.separator}>/</span>
             <strong>Meu quadro</strong>
           </div>

@@ -8,7 +8,7 @@
   top: -5rem;
   z-index: 20;
   padding: 1rem;
-  background: white;
+  background: var(--color-surface);
   border-radius: 8px;
 }
 .skipLink:focus {
@@ -17,8 +17,9 @@
 .sidebar {
   width: 224px;
   flex: 0 0 224px;
-  background: #fff;
-  border-right: 1px solid #e9eaf1;
+  background: var(--color-brand-petrol);
+  color: var(--color-on-dark);
+  border-right: 1px solid var(--color-brand-mid);
   padding: 32px 20px 20px;
   display: flex;
   flex-direction: column;
@@ -28,33 +29,30 @@
   align-items: center;
   gap: 9px;
   text-decoration: none;
-  font-size: 27px;
-  font-weight: 720;
-  letter-spacing: -1px;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-brand-gold);
   margin: 0 12px 58px;
 }
 .brandMark {
   width: 35px;
   height: 35px;
-  background: #6555ce;
-  color: white;
+  background: transparent;
+  color: var(--color-brand-gold);
+  border: 1px solid var(--color-brand-gold);
   display: grid;
   place-items: center;
-  border-radius: 11px;
-  font-size: 28px;
-  padding-bottom: 8px;
-}
-.brandDot {
-  font-size: 10px;
-  align-self: flex-start;
-  margin-top: 4px;
-  margin-left: -4px;
-  color: #60697d;
+  border-radius: 7px;
+  font-size: 25px;
+  line-height: 1;
+  padding-left: 2px;
 }
 .navLabel {
   font-size: 10px;
   letter-spacing: 1.7px;
-  color: #60697d;
+  color: var(--color-on-dark);
   font-weight: 700;
   padding: 0 14px;
   margin-bottom: 14px;
@@ -65,8 +63,8 @@
   gap: 10px;
   text-decoration: none;
   padding: 13px 14px;
-  color: #5c4bc2;
-  background: #f0edfc;
+  color: var(--color-brand-gold);
+  background: var(--color-brand-mid);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 650;
@@ -74,8 +72,8 @@
 .navNumber {
   margin-left: auto;
   font-size: 10px;
-  color: #5544af;
-  background: #e5dff9;
+  color: var(--color-brand-gold);
+  background: var(--color-brand-petrol);
   padding: 2px 5px;
   border-radius: 4px;
 }
@@ -84,33 +82,33 @@
   padding-top: 85px;
 }
 .noteSymbol {
-  color: #8577db;
+  color: var(--color-brand-gold);
   font-size: 32px;
 }
 .sidebarNote p {
   font-size: 15px;
   line-height: 1.6;
-  color: #656878;
+  color: var(--color-on-dark);
 }
 .sidebarNote strong {
-  color: #343644;
+  color: var(--color-surface);
   font-weight: 600;
 }
 .sidebarNote > span:last-child {
   display: block;
   font-size: 12px;
-  color: #60697d;
+  color: var(--color-on-dark);
   line-height: 1.6;
   max-width: 145px;
 }
 .sidebarFooter {
-  border-top: 1px solid #ececf3;
+  border-top: 1px solid var(--color-brand-mid);
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 20px 8px 0;
   font-size: 10px;
-  color: #60697d;
+  color: var(--color-on-dark);
 }
 .sidebarFooter > span:last-child {
   margin-left: auto;
@@ -121,7 +119,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #8070ce;
+  background: var(--color-brand-gold);
 }
 .workspace {
   flex: 1;
@@ -133,30 +131,30 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  border-bottom: 1px solid #e6e8f0;
-  background: #ffffffa8;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 .topbar > div {
   display: flex;
   align-items: center;
   gap: 13px;
-  color: #60697d;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 .topbar strong {
   font-weight: 550;
-  color: #414556;
+  color: var(--color-text);
 }
 .separator {
-  color: #bfc2cf;
+  color: var(--color-border);
 }
 .localBadge {
   padding: 6px 10px;
-  border: 1px solid #e5e7ef;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 10px;
-  color: #686d80;
-  background: white;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
 }
 .main {
   max-width: 1600px;
@@ -171,7 +169,7 @@
   margin-bottom: 38px;
 }
 .eyebrow {
-  color: #60697d;
+  color: var(--color-gold-text);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.8px;
@@ -181,15 +179,16 @@
   font-size: clamp(28px, 3vw, 38px);
   letter-spacing: -1.5px;
   line-height: 1.15;
-  font-weight: 650;
+  font-weight: 500;
+  color: var(--color-brand-ink);
   margin: 0 0 12px;
 }
 .heading h1 span {
-  color: #7461cf;
+  color: var(--color-brand-gold);
 }
 .subtitle {
   font-size: 13px;
-  color: #60697d;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
@@ -211,25 +210,25 @@
     box-shadow 0.15s;
 }
 .primary {
-  background: #6554c8;
-  color: white;
-  box-shadow: 0 3px 7px #6554c825;
+  background: var(--color-brand-gold);
+  color: var(--color-brand-ink);
+  box-shadow: 0 3px 7px #02141b14;
 }
 .primary:hover:not(:disabled) {
-  background: #5443b4;
-  box-shadow: 0 4px 12px #6554c838;
+  background: var(--color-gold-hover);
+  box-shadow: 0 4px 12px #02141b24;
 }
 .secondary {
-  background: white;
-  border: 1px solid #dfe1eb;
-  color: #575d70;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
 }
 .secondary:hover:not(:disabled) {
-  background: #f4f4f9;
+  background: var(--color-surface-muted);
 }
 .danger {
   background: #b83f4c;
-  color: white;
+  color: var(--color-surface);
 }
 .danger:hover:not(:disabled) {
   background: #a12e3c;
@@ -240,35 +239,35 @@
   justify-content: space-between;
   gap: 20px;
   padding-bottom: 17px;
-  border-bottom: 1px solid #e2e5ef;
+  border-bottom: 1px solid var(--color-border);
 }
 .boardLabel {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #60697d;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 .boardLabel strong {
-  color: #424655;
+  color: var(--color-text);
   font-weight: 600;
 }
 .boardLabel > span {
   font-size: 10px;
-  border-left: 1px solid #dce0ea;
+  border-left: 1px solid var(--color-border);
   padding-left: 12px;
   margin-left: 5px;
-  color: #60697d;
+  color: var(--color-text-muted);
 }
 .progressGroup {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 10px;
-  color: #60697d;
+  color: var(--color-text-muted);
 }
 .progressGroup strong {
-  color: #6659b1;
+  color: var(--color-brand-petrol);
   font-size: 10px;
   font-weight: 600;
   min-width: 28px;
@@ -276,14 +275,14 @@
 .progressTrack {
   width: 90px;
   height: 4px;
-  background: #e6e3f1;
+  background: var(--color-petrol-soft);
   border-radius: 5px;
   overflow: hidden;
 }
 .progressTrack > span {
   display: block;
   height: 100%;
-  background: #8270d5;
+  background: var(--color-brand-gold);
   border-radius: 5px;
   transition: width 0.25s;
 }
@@ -293,7 +292,7 @@
 .notice {
   min-height: 18px;
   font-size: 11px;
-  color: #476a58;
+  color: var(--color-success);
   margin: 9px 0;
 }
 .errorBanner {
@@ -325,9 +324,9 @@
   gap: 20px;
 }
 .column {
-  border: 1px solid #e4e6ef;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #eff1f7;
+  background: var(--color-surface-muted);
   min-height: 390px;
   transition:
     background 0.15s,
@@ -346,7 +345,7 @@
 }
 .columnHeading p {
   font-size: 10px;
-  color: #60697d;
+  color: var(--color-text-muted);
   margin: 9px 0 0 17px;
 }
 .dot {
@@ -361,31 +360,31 @@
   min-width: 21px;
   height: 20px;
   border-radius: 5px;
-  background: #e3e6ef;
+  background: var(--color-surface-muted);
   font-size: 10px;
-  color: #666c80;
+  color: var(--color-text-muted);
   margin-left: auto;
 }
 .todo {
-  color: #6653ae;
-  background: #eae4f9;
+  color: var(--color-brand-petrol);
+  background: var(--color-petrol-soft);
 }
 .in_progress {
-  color: #91601e;
-  background: #f7ebd4;
+  color: var(--color-gold-text);
+  background: var(--color-gold-soft);
 }
 .done {
-  color: #35705c;
-  background: #dceee7;
+  color: var(--color-success);
+  background: var(--color-success-soft);
 }
 .dot.todo {
-  background: #9986dc;
+  background: var(--color-brand-slate);
 }
 .dot.in_progress {
-  background: #d5a24d;
+  background: var(--color-brand-gold);
 }
 .dot.done {
-  background: #6eac94;
+  background: var(--color-success);
 }
 .cardList {
   display: flex;
@@ -395,15 +394,15 @@
 }
 .card {
   padding: 14px 15px 11px;
-  border: 1px solid #e1e4ee;
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  background: white;
-  box-shadow: 0 2px 3px #26304c03;
+  background: var(--color-surface);
+  box-shadow: 0 2px 3px #02141b05;
   position: relative;
 }
 .card:hover {
-  border-color: #d0cce8;
-  box-shadow: 0 4px 12px #27304607;
+  border-color: var(--color-brand-slate);
+  box-shadow: 0 4px 12px #02141b0d;
 }
 .cardTop {
   display: flex;
@@ -421,20 +420,20 @@
   margin: 13px 0 8px;
   font-size: 13px;
   font-weight: 620;
-  color: #363b4a;
+  color: var(--color-text);
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
 .description {
   font-size: 11px;
-  color: #60697d;
+  color: var(--color-text-muted);
   line-height: 1.75;
   margin: 0 0 15px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .cardBottom {
-  border-top: 1px solid #f0f1f6;
+  border-top: 1px solid var(--color-border);
   padding-top: 10px;
   margin-top: 16px;
   display: flex;
@@ -445,8 +444,8 @@
 .moveSelect {
   font-size: 10px;
   border: 0;
-  color: #60697d;
-  background: white;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
   max-width: 140px;
   padding: 6px 2px;
   cursor: pointer;
@@ -457,7 +456,7 @@
   gap: 3px;
 }
 .iconButton {
-  color: #60697d;
+  color: var(--color-text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -468,8 +467,8 @@
   border-radius: 5px;
 }
 .iconButton:hover:not(:disabled) {
-  background: #f1eefb;
-  color: #6755b4;
+  background: var(--color-petrol-soft);
+  color: var(--color-brand-petrol);
 }
 .deleteButton:hover:not(:disabled) {
   color: #aa3e4c;
@@ -486,17 +485,17 @@
   opacity: 0.6;
 }
 .dropTarget {
-  background: #e9e4fa;
-  border-color: #a291df;
+  background: var(--color-petrol-soft);
+  border-color: var(--color-brand-slate);
 }
 .saving {
   display: block;
-  color: #6654b1;
+  color: var(--color-brand-petrol);
   font-size: 10px;
   padding-top: 8px;
 }
 .emptyColumn {
-  border: 1px dashed #d5d9e5;
+  border: 1px dashed var(--color-border);
   border-radius: 8px;
   padding: 40px 12px;
   min-height: 230px;
@@ -516,19 +515,19 @@
 }
 .emptyColumn p {
   font-size: 12px;
-  color: #5c647a;
+  color: var(--color-text-muted);
   margin: 14px 0 8px;
 }
 .emptyColumn > span:last-child {
   font-size: 10px;
-  color: #60697d;
+  color: var(--color-text-muted);
   line-height: 1.6;
 }
 .boardFooter {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  color: #60697d;
+  color: var(--color-text-muted);
   font-size: 10px;
   padding: 22px 0;
 }
@@ -538,19 +537,19 @@
   gap: 6px;
 }
 .boardFooter > span:last-child {
-  color: #60697d;
+  color: var(--color-text-muted);
 }
 .modal {
-  border: 1px solid #e6e4f0;
+  border: 1px solid var(--color-border);
   border-radius: 15px;
   padding: 28px;
   width: min(480px, calc(100% - 32px));
   max-height: calc(100dvh - 32px);
-  color: #343848;
-  box-shadow: 0 24px 100px #29224230;
+  color: var(--color-text);
+  box-shadow: 0 24px 100px #02141b30;
 }
 .modal::backdrop {
-  background: #26233960;
+  background: #02141b80;
   backdrop-filter: blur(3px);
 }
 .modalHeading {
@@ -567,7 +566,7 @@
 }
 .modalIntro {
   font-size: 12px;
-  color: #60697d;
+  color: var(--color-text-muted);
   margin: 8px 0 24px;
 }
 .fields {
@@ -583,21 +582,21 @@
   margin-bottom: 8px;
 }
 .fields label > span:first-child:not(.optional) {
-  color: #7966cb;
+  color: var(--color-brand-petrol);
 }
 .optional {
-  color: #60697d;
+  color: var(--color-text-muted);
   font-weight: 400;
 }
 .fields input,
 .fields textarea,
 .fields select {
   width: 100%;
-  background: #fcfcfe;
-  border: 1px solid #dce0eb;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-control-border);
   border-radius: 7px;
   padding: 11px 12px;
-  color: #34384b;
+  color: var(--color-text);
   font-size: 13px;
 }
 .fields textarea {
@@ -612,7 +611,7 @@
 .fieldError {
   font-size: 10px;
   margin: 7px 0 20px;
-  color: #60697d;
+  color: var(--color-text-muted);
 }
 .fieldError {
   color: #ab3d48;
@@ -629,14 +628,14 @@
   display: flex;
   justify-content: flex-end;
   gap: 9px;
-  border-top: 1px solid #eeeef5;
+  border-top: 1px solid var(--color-border);
   padding-top: 20px;
   margin-top: 25px;
 }
 .deleteText {
   font-size: 13px;
   line-height: 1.8;
-  color: #6a7084;
+  color: var(--color-text-muted);
   overflow-wrap: anywhere;
 }
 @media (min-width: 1500px) {
@@ -655,7 +654,7 @@
     padding-right: 14px;
   }
   .brand {
-    font-size: 24px;
+    font-size: 18px;
     margin-left: 5px;
   }
   .main {
