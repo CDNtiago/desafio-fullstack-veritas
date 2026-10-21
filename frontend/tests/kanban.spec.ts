@@ -78,7 +78,7 @@ test('CRUD completo e todas as colunas usando a API real', async ({ page }) => {
   await expect(page.getByRole('article')).toHaveCount(0)
 })
 
-test('arraste para coluna vazia e cancelamento por Escape', async ({
+test('arraste pelo corpo para coluna vazia e cancelamento por Escape', async ({
   page,
   request,
 }) => {
@@ -86,7 +86,9 @@ test('arraste para coluna vazia e cancelamento por Escape', async ({
   await page.goto('/')
   const handle = page.getByRole('button', { name: 'Arrastar Arrastar cartão' })
   const target = page.getByRole('region', { name: 'Em Progresso' })
-  const sourceBox = await handle.boundingBox()
+  const sourceBox = await page
+    .getByRole('heading', { name: 'Arrastar cartão', exact: true })
+    .boundingBox()
   const targetBox = await target.boundingBox()
   expect(sourceBox).not.toBeNull()
   expect(targetBox).not.toBeNull()
@@ -186,4 +188,67 @@ test('teclado, texto seguro, acessibilidade e tela móvel', async ({ page }) => 
   ).toEqual([])
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('menu lateral recolhe e reabre no desktop e fecha pelo fundo no celular', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const sidebar = page.locator('#menu-lateral')
+  const showMenu = page.getByRole('button', { name: 'Mostrar menu lateral' })
+  const hideMenu = page.getByRole('button', { name: 'Ocultar menu lateral' })
+  await expect(sidebar).toBeInViewport()
+  await hideMenu.click()
+  await expect(sidebar).not.toBeInViewport()
+  await expect(sidebar).toHaveAttribute('inert', '')
+  await showMenu.click()
+  await expect(sidebar).toBeInViewport()
+  await expect(hideMenu).toHaveAttribute('aria-expanded', 'true')
+
+  await hideMenu.click()
+  await page.setViewportSize({ width: 390, height: 844 })
+  await showMenu.click()
+  await expect(sidebar).toBeInViewport()
+  await page.getByRole('button', { name: 'Fechar menu lateral' }).click({
+    position: { x: 378, y: 100 },
+  })
+  await expect(sidebar).not.toBeInViewport()
+  await expect(showMenu).toHaveAttribute('aria-expanded', 'false')
+})
+
+test('descrição mantém a altura e rola até o cursor sem redimensionamento manual', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Nova tarefa' }).click()
+  const description = page.getByLabel('Descrição', { exact: false })
+  const initialHeight = await description.evaluate(
+    (field) => field.clientHeight,
+  )
+  await description.fill(
+    Array.from(
+      { length: 40 },
+      (_, index) => `Linha ${index + 1}: contexto.`,
+    ).join('\n'),
+  )
+  await description.press('ControlOrMeta+End')
+  await description.press('Enter')
+  await description.pressSequentially('Última linha')
+  await expect(description).toHaveCSS('resize', 'none')
+  expect(await description.evaluate((field) => field.clientHeight)).toBe(
+    initialHeight,
+  )
+  await expect
+    .poll(() => description.evaluate((field) => field.scrollTop))
+    .toBeGreaterThan(0)
+  const scrollAtEnd = await description.evaluate((field) => field.scrollTop)
+  await description.press('ControlOrMeta+Home')
+  await expect(description).toHaveJSProperty('selectionStart', 0)
+  await expect
+    .poll(() => description.evaluate((field) => field.scrollTop))
+    .toBeLessThan(scrollAtEnd)
+  await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByRole('article')).toHaveCount(0)
 })
