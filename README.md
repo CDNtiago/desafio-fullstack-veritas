@@ -2,13 +2,6 @@
 
 Desenvolvi este Mini Kanban para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**, usando **React** no frontend, **Go** na API e **arquivo JSON** para persistência, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
 
-Com Git instalado, obtenha o código e escolha uma das formas de execução abaixo:
-
-```sh
-git clone https://github.com/CDNtiago/desafio-fullstack-veritas.git
-cd desafio-fullstack-veritas
-```
-
 ## Funcionalidades
 
 - Criar, editar e excluir tarefas com confirmação.
@@ -19,39 +12,39 @@ cd desafio-fullstack-veritas
 - Interface responsiva, teclado, foco visível e anúncios acessíveis.
 - Dados preservados ao recarregar a página e reiniciar a API.
 
-## Executar com Docker Compose
+## Como executar
 
-Requer Docker Engine/Desktop com Compose v2 ou superior, em modo de containers Linux. Não requer Go ou Node no host. Na raiz:
+Há duas formas de executar, e as duas usam as mesmas portas: interface em **5173** e API em **8080**.
+
+- **Opção 1, sem Docker:** requer Go e Node.js instalados.
+- **Opção 2, com Docker:** requer apenas Docker, sem Go nem Node.
+
+Primeiro, clone o repositório:
 
 ```sh
-docker compose up --build -d --wait
+git clone https://github.com/CDNtiago/desafio-fullstack-veritas.git
+cd desafio-fullstack-veritas
 ```
 
-Interface: <http://localhost:5173>. API: <http://localhost:8080/tasks>. Disponibilidade: <http://localhost:8080/health>.
+### Opção 1 — Sem Docker (Go + Node.js)
+
+**Pré-requisitos:** [Go](https://go.dev/dl/) 1.27 ou superior e [Node.js](https://nodejs.org/) 24 (testado com Go 1.27.3 e Node.js 24.19.0). Para conferir:
 
 ```sh
-docker compose logs -f
-docker compose down
+go version
+node --version
 ```
 
-`down` preserva as tarefas no volume `tasks-data` (nome físico prefixado pelo projeto Compose). Para **apagar todas as tarefas**, use `docker compose down --volumes` com a aplicação parada.
-
-Se as portas estiverem ocupadas, copie `.env.example` para `.env`, altere `BACKEND_PORT` e `FRONTEND_PORT` e repita o build. Exemplo: `8095` e `5185`. O Compose ajusta CORS e a URL da API no build. Acesse a interface na nova porta.
-
-## Executar nativamente
-
-Versões usadas: **Go 1.27.3**, **Node.js 24.19.0**, **React 19.3.1**, **TypeScript 6.0.3** e **Vite 8.3.4**. Go e Node devem estar no PATH. As dependências npm estão fixadas no lockfile.
-
-Na raiz, abra dois terminais.
-
-**Terminal 1 — API:**
+**Passo 1 — Iniciar a API.** Em um terminal, na pasta do projeto:
 
 ```sh
 cd backend
 go run .
 ```
 
-**Terminal 2 — frontend:**
+A API está pronta quando aparecer a mensagem `API listening`. Deixe esse terminal aberto.
+
+**Passo 2 — Iniciar a interface.** Abra um **segundo terminal**, na pasta do projeto:
 
 ```sh
 cd frontend
@@ -59,9 +52,106 @@ npm ci
 npm run dev
 ```
 
-Acesse <http://localhost:5173>. O backend usa `backend/data/tasks.json` quando iniciado de dentro de `backend`. Diretório e arquivo são criados na primeira gravação. Encerre com `Ctrl+C`.
+O `npm ci` só é necessário na primeira execução. Ele instala as versões exatas do `package-lock.json`.
 
-Para conferir o build da interface, pare o servidor de desenvolvimento e execute em `frontend`:
+**Passo 3 — Abrir no navegador:** <http://localhost:5173>
+
+Para encerrar, use `Ctrl+C` nos dois terminais. As tarefas ficam salvas em `backend/data/tasks.json`, criado na primeira gravação, e continuam lá na próxima execução.
+
+#### Se a porta 8080 ou 5173 já estiver em uso
+
+Use outras portas, por exemplo **8094** para a API e **5184** para a interface. Copie o bloco do seu terminal.
+
+**PowerShell (Windows)**
+
+Terminal 1, na pasta do projeto:
+
+```powershell
+cd backend
+$env:HTTP_ADDR = '127.0.0.1:8094'
+$env:ALLOWED_ORIGINS = 'http://localhost:5184,http://127.0.0.1:5184'
+go run .
+```
+
+Terminal 2, na pasta do projeto:
+
+```powershell
+cd frontend
+npm ci
+$env:VITE_API_URL = 'http://127.0.0.1:8094'
+npm run dev -- --port 5184
+```
+
+**Bash ou Zsh (Linux, macOS, Git Bash)**
+
+Terminal 1, na pasta do projeto:
+
+```sh
+cd backend
+HTTP_ADDR=127.0.0.1:8094 ALLOWED_ORIGINS=http://localhost:5184,http://127.0.0.1:5184 go run .
+```
+
+Terminal 2, na pasta do projeto:
+
+```sh
+cd frontend
+npm ci
+VITE_API_URL=http://127.0.0.1:8094 npm run dev -- --port 5184
+```
+
+Depois, acesse <http://localhost:5184>. As três variáveis precisam combinar: a interface chama a API em `VITE_API_URL`, e a API só aceita a origem listada em `ALLOWED_ORIGINS`.
+
+### Opção 2 — Com Docker
+
+**Pré-requisito:** Docker Desktop ou Docker Engine com Compose v2, em modo de containers Linux.
+
+**Passo 1 — Construir e iniciar**, na pasta do projeto:
+
+```sh
+docker compose up --build -d --wait
+```
+
+O primeiro build leva alguns minutos. O comando termina quando os dois serviços estão saudáveis.
+
+**Passo 2 — Abrir no navegador:** <http://localhost:5173>
+
+**Para acompanhar ou encerrar:**
+
+```sh
+docker compose logs -f
+docker compose down
+```
+
+O `down` mantém as tarefas no volume `tasks-data`. Para **apagar todas as tarefas**, use `docker compose down --volumes`.
+
+**Se a porta 8080 ou 5173 já estiver em uso:** informe outras portas ao iniciar. O Compose ajusta o CORS e a URL da API automaticamente.
+
+PowerShell (Windows):
+
+```powershell
+$env:BACKEND_PORT = '8094'
+$env:FRONTEND_PORT = '5184'
+docker compose up --build -d --wait
+```
+
+Bash ou Zsh (Linux, macOS, Git Bash):
+
+```sh
+BACKEND_PORT=8094 FRONTEND_PORT=5184 docker compose up --build -d --wait
+```
+
+Depois, acesse <http://localhost:5184>. Para não repetir as variáveis, copie `.env.example` para `.env` e altere as portas nele.
+
+### Conferir se a API está no ar
+
+Com qualquer uma das opções, estes endereços respondem no navegador:
+
+- Disponibilidade: <http://localhost:8080/health> → `{"status":"ok"}`
+- Tarefas: <http://localhost:8080/tasks> → lista em JSON, `[]` quando vazia
+
+### Build de produção da interface (opcional)
+
+Com a API rodando, pare o `npm run dev` e execute em `frontend`:
 
 ```sh
 npm run build
@@ -72,30 +162,13 @@ npm run preview
 
 | Variável | Padrão | Uso |
 | --- | --- | --- |
-| `HTTP_ADDR` | `127.0.0.1:8080` | Endereço da API nativa |
-| `TASKS_FILE` | `data/tasks.json` | Caminho relativo ao diretório do processo |
+| `HTTP_ADDR` | `127.0.0.1:8080` | Endereço da API sem Docker |
+| `TASKS_FILE` | `data/tasks.json` | Arquivo de tarefas, relativo à pasta onde a API é iniciada |
 | `ALLOWED_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Origens exatas, separadas por vírgulas, sem barra final |
-| `VITE_API_URL` | `http://localhost:8080` | URL da API usada no desenvolvimento/build |
-| `BACKEND_PORT` / `FRONTEND_PORT` | `8080` / `5173` | Portas do host no Compose |
+| `VITE_API_URL` | `http://localhost:8080` | URL da API usada pela interface |
+| `BACKEND_PORT` / `FRONTEND_PORT` | `8080` / `5173` | Portas do host no Docker Compose |
 
-O Go lê variáveis do processo, **não carrega `.env` automaticamente**. O Vite lê `frontend/.env`; o Compose lê `.env` na raiz. Não há segredos necessários.
-
-Exemplo com portas alternativas no **PowerShell**, dentro de `backend`:
-
-```powershell
-$env:HTTP_ADDR = '127.0.0.1:8093'
-$env:ALLOWED_ORIGINS = 'http://localhost:5183,http://127.0.0.1:5183'
-go run .
-```
-
-No segundo terminal, dentro de `frontend`:
-
-```powershell
-$env:VITE_API_URL = 'http://127.0.0.1:8093'
-npm run dev -- --port 5183
-```
-
-Em shells POSIX, use respectivamente `HTTP_ADDR=127.0.0.1:8093 ALLOWED_ORIGINS=http://localhost:5183,http://127.0.0.1:5183 go run .` e `VITE_API_URL=http://127.0.0.1:8093 npm run dev -- --port 5183`.
+O Go lê as variáveis do terminal e **não carrega `.env` automaticamente**. O Vite lê `frontend/.env`, e o Compose lê `.env` na raiz. Nenhum segredo é necessário.
 
 ## API
 
