@@ -1,0 +1,45 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: '#f4ead9'
+    primaryTextColor: '#02141b'
+    primaryBorderColor: '#9f835a'
+    lineColor: '#526c76'
+    secondaryColor: '#e4eeed'
+    tertiaryColor: '#f6f7f5'
+    fontFamily: 'Arial, sans-serif'
+    fontSize: '16px'
+---
+flowchart TB
+    U([Pessoa usuária])
+
+    subgraph FRONT[Navegador · React]
+      direction LR
+      UI[Componentes<br/>TaskForm · TaskCard · Column<br/>validação imediata dos campos]
+      HOOK[useTasks<br/>estado da lista e bloqueio de envio<br/>movimento otimista e reconciliação]
+      CLIENT[api.ts<br/>fetch com prazo de 15 s<br/>confere o formato das respostas]
+      UI -- ação --> HOOK
+      HOOK -- chamada --> CLIENT
+      CLIENT -. tarefa ou erro .-> HOOK
+      HOOK -. lista e mensagens .-> UI
+    end
+
+    subgraph BACK[API Go · biblioteca padrão]
+      direction LR
+      H[handlers.go<br/>CORS, Content-Type, 16 KiB<br/>campos permitidos e status HTTP]
+      S[service.go<br/>Validate, ID aleatório<br/>createdAt e updatedAt]
+      R[repository.go<br/>JSONRepository com mutex<br/>lista em memória confirmada<br/>só depois de gravar]
+      H -- Input --> S
+      S -- Repository --> R
+      R -. Task ou erro .-> S
+      S -. Task ou erro .-> H
+    end
+
+    FILE[(backend/data/tasks.json<br/>temporário, sync e rename)]
+
+    U -- clica, arrasta e digita --> FRONT
+    FRONT -- "HTTP + JSON<br/>GET · POST /tasks · PUT · DELETE /tasks/{id}" --> BACK
+    BACK -. "200 · 201 · 204 ou { error: code, message, fields }" .-> FRONT
+    BACK -- grava a lista completa --> FILE
+    FILE -. lido e validado na inicialização .-> BACK

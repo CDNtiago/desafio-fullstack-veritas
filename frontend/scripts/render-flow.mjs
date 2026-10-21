@@ -21,32 +21,36 @@ writeFileSync(
   }),
 )
 try {
-  const result = spawnSync(
-    process.execPath,
-    [
-      process.env.npm_execpath,
-      'exec',
-      '--yes',
-      '--package=@mermaid-js/mermaid-cli@12.0.0',
-      '--',
-      'mmdc',
-      '-i',
-      'docs/user-flow.mmd',
-      '-o',
-      'docs/user-flow.png',
-      '-b',
-      'white',
-      '--size',
-      '2400',
-      '-s',
-      '2',
-      '-p',
-      config,
-    ],
-    { cwd: root, stdio: 'inherit' },
-  )
-  if (result.error) console.error(result.error)
-  process.exitCode = result.status ?? 1
+  // Gero o User Flow obrigatório e o fluxo de dados opcional a partir das fontes Mermaid.
+  for (const name of ['user-flow', 'data-flow']) {
+    const result = spawnSync(
+      process.execPath,
+      [
+        process.env.npm_execpath,
+        'exec',
+        '--yes',
+        '--package=@mermaid-js/mermaid-cli@12.0.0',
+        '--',
+        'mmdc',
+        '-i',
+        `docs/${name}.mmd`,
+        '-o',
+        `docs/${name}.png`,
+        '-b',
+        'white',
+        '--size',
+        '2400',
+        '-s',
+        '2',
+        '-p',
+        config,
+      ],
+      { cwd: root, stdio: 'inherit' },
+    )
+    if (result.error) console.error(result.error)
+    process.exitCode = result.status ?? 1
+    if (process.exitCode !== 0) break
+  }
 } finally {
   unlinkSync(config)
   rmdirSync(temporary)

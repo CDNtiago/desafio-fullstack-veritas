@@ -2,8 +2,6 @@
 
 Desenvolvi este Mini Kanban para organizar tarefas em **A Fazer**, **Em Progresso** e **Concluídas**, usando **React** no frontend, **Go** na API e **arquivo JSON** para persistência, conforme o [Desafio prático](./Desafio%20pr%C3%A1tico.txt).
 
-**Em revisão:** estou finalizando a revisão do projeto e mantenho o repositório privado até concluir essa etapa. Antes do envio, vou torná-lo público para permitir a avaliação.
-
 Com Git instalado, obtenha o código e escolha uma das formas de execução abaixo:
 
 ```sh
@@ -154,8 +152,13 @@ frontend/
   src/components/       ícones e modal
   src/tasks/            modelo, cliente HTTP, hook e componentes
   tests/                Playwright com API real e dados isolados
-docs/user-flow.png      diagrama obrigatório do fluxo de uso
+docs/
+  user-flow.png         diagrama obrigatório do fluxo de uso
+  data-flow.png         fluxo de dados entre interface, API e arquivo JSON
+  *.mmd                 fontes Mermaid dos dois diagramas
 ```
+
+Mantive os nomes `main.go`, `handlers.go` e `models.go` sugeridos nas orientações do desafio e separei serviço e repositório em arquivos próprios.
 
 - **Go com biblioteca padrão:** optei por não adicionar framework ou ORM, pois a biblioteca padrão atende ao escopo. O servidor de execução não tem dependências externas.
 - **JSON:** escolhi uma alternativa permitida no desafio. Os dados são lidos em memória, e cada alteração só é confirmada após a gravação no arquivo.
@@ -214,19 +217,21 @@ A CI verifica Go em Windows e Linux, race detector, frontend, E2E, auditorias e 
 
 ![Fluxo de uso com criação, edição, movimentação, exclusão, erros e cancelamentos](docs/user-flow.png)
 
-Incluí a imagem obrigatória do fluxo de uso em `docs/user-flow.png`. Para gerar uma nova captura da interface, inicie uma instância de desenvolvimento vazia e execute `node scripts/capture.mjs` em `frontend`. O script cria cinco exemplos e remove apenas os que criou ao terminar. Use `CAPTURE_URL` e `CAPTURE_API_URL` para portas alternativas.
+Incluí a imagem obrigatória do fluxo de uso em `docs/user-flow.png`.
 
-## Demonstração e entrega
+## Fluxo de dados
+
+![Fluxo de dados da interface React, passando pela API Go, até o arquivo JSON](docs/data-flow.png)
+
+O diagrama opcional `docs/data-flow.png` mostra o caminho de cada operação: componentes → `useTasks` → `api.ts` → HTTP → `handlers.go` → `service.go` → `repository.go` → `tasks.json`. A resposta só retorna à interface depois da gravação no arquivo.
+
+Os dois diagramas são gerados a partir das fontes Mermaid em `docs`. Para regenerá-los, execute `npm run docs:flow` em `frontend`, depois de instalar o Chromium do Playwright. Para gerar uma nova captura da interface, inicie uma instância de desenvolvimento vazia e execute `node scripts/capture.mjs` em `frontend`. O script cria cinco exemplos e remove apenas os que criou ao terminar. Use `CAPTURE_URL` e `CAPTURE_API_URL` para portas alternativas.
+
+## Roteiro de demonstração
 
 1. Criar e editar uma tarefa.
 2. Mover por arraste e seletor, incluindo retorno a A Fazer.
 3. Recarregar a página e reiniciar a API para comprovar persistência.
 4. Cancelar e depois confirmar a exclusão.
 5. Demonstrar entrada inválida rejeitada pela API e explicar HTTP → serviço → JSON.
-6. Mostrar testes, User Flow e decisões técnicas.
-
-Pesos oficiais: funcionalidade **40%**, arquitetura **25%**, UI/UX **15%**, documentação **15%**, Git **5%**. O edital exige nota mínima 7 e demonstração de domínio mínimo da solução.
-
-Vou enviar exclusivamente o link do repositório público **desafio-fullstack-veritas** pelo canal indicado pela empresa. Antes do envio, vou conferir o acesso sem login ao código, ao README e à imagem do User Flow. Até concluir a revisão, mantenho o repositório privado. Ainda preciso confirmar o canal e o prazo vigentes: o edital menciona um formulário, mas o endereço não consta nos documentos que recebi.
-
-Também conferi o projeto com o PDF **DESAFIO TÉCNICO - ORIENTAÇÕES**: descrição opcional, título obrigatório, status válido, limitações e melhorias futuras no README. Arraste, JSON, Docker e testes são bônus opcionais nesse documento. Mantive os nomes `main.go`, `handlers.go` e `models.go` apresentados nas orientações e separei serviço e repositório em arquivos próprios para manter as responsabilidades claras.
+6. Mostrar testes, User Flow, fluxo de dados e decisões técnicas.
