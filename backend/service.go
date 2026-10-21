@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Repository permite ao serviço operar tarefas sem conhecer a gravação em JSON.
 type Repository interface {
 	List(context.Context) ([]Task, error)
 	Create(context.Context, Task) (Task, error)
@@ -23,6 +24,7 @@ func (s *Service) Create(ctx context.Context, input Input) (Task, error) {
 	if err != nil {
 		return Task{}, err
 	}
+	// Gero ID e datas no servidor para não depender de valores enviados pelo cliente.
 	var id [16]byte
 	if _, err := rand.Read(id[:]); err != nil {
 		return Task{}, err

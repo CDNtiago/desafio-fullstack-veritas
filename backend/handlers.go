@@ -14,6 +14,7 @@ import (
 
 const MaxBodyBytes = 16 * 1024
 
+// API adapta HTTP ao serviço; validações de negócio e persistência ficam fora do handler.
 type API struct {
 	service *Service
 	origins map[string]bool
@@ -32,6 +33,7 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Vary", "Origin")
+	// CORS controla a integração pelo navegador; não autentica clientes da API.
 	if origin := r.Header.Get("Origin"); origin != "" {
 		if !a.origins[origin] {
 			failure(w, 403, "origin_denied", "Origem não permitida.", nil)
@@ -40,6 +42,7 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	}
 	if r.Method == http.MethodOptions {
+		// O preflight confere método e cabeçalhos antes de autorizar o pedido do navegador.
 		if r.URL.Path != "/tasks" && !strings.HasPrefix(r.URL.Path, "/tasks/") {
 			failure(w, 404, "not_found", "Rota não encontrada.", nil)
 			return
@@ -125,6 +128,7 @@ func readInput(w http.ResponseWriter, r *http.Request, update bool) (Input, bool
 		failure(w, 415, "unsupported_media_type", "Envie application/json.", nil)
 		return Input{}, false
 	}
+	// Limito o corpo antes de decodificar para não aceitar uma entrada sem limite de tamanho.
 	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, MaxBodyBytes))
 	if err != nil {
 		var tooLarge *http.MaxBytesError
@@ -137,11 +141,13 @@ func readInput(w http.ResponseWriter, r *http.Request, update bool) (Input, bool
 	}
 	var fields map[string]json.RawMessage
 	decoder := json.NewDecoder(bytes.NewReader(data))
+	// A segunda leitura deve chegar ao fim: outro objeto após o primeiro é recusado.
 	if !utf8.Valid(data) || decoder.Decode(&fields) != nil || fields == nil || decoder.Decode(new(any)) != io.EOF {
 		failure(w, 400, "invalid_json", "Envie um único objeto JSON válido.", nil)
 		return Input{}, false
 	}
 	input := Input{Status: Todo}
+	// A lista explícita de campos impede que ID, datas ou campos desconhecidos sejam aceitos.
 	values := map[string]*string{"title": &input.Title, "description": &input.Description, "status": &input.Status}
 	for key, raw := range fields {
 		destination, allowed := values[key]
@@ -151,6 +157,7 @@ func readInput(w http.ResponseWriter, r *http.Request, update bool) (Input, bool
 		}
 	}
 	if update {
+		// PUT substitui todos os campos editáveis; descrição vazia continua sendo válida.
 		for key := range values {
 			if _, exists := fields[key]; !exists {
 				failure(w, 400, "missing_field", "PUT exige title, description e status.", nil)
@@ -169,6 +176,7 @@ func (a *API) error(w http.ResponseWriter, err error) {
 	case errors.Is(err, ErrNotFound):
 		failure(w, 404, "task_not_found", "Tarefa não encontrada. Atualize o quadro.", nil)
 	default:
+		// Registro o diagnóstico no servidor sem expor caminhos e detalhes internos na resposta.
 		a.logger.Error("request failed", "error", err)
 		failure(w, 500, "internal_error", "Não foi possível concluir a operação.", nil)
 	}

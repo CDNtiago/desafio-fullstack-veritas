@@ -1,5 +1,6 @@
 import { isStatus, type Task, type TaskInput } from './model'
 
+// O Vite inclui esta URL no build; ela é configuração pública, não um segredo.
 const baseURL = (
   import.meta.env.VITE_API_URL || 'http://localhost:8080'
 ).replace(/\/$/, '')
@@ -12,6 +13,7 @@ export class APIError extends Error {
   }
 }
 function isTask(value: unknown): value is Task {
+  // A tipagem do TypeScript não valida respostas HTTP em execução.
   if (!value || typeof value !== 'object') return false
   const item = value as Record<string, unknown>
   return (
@@ -30,6 +32,7 @@ async function request(
   input?: TaskInput,
   signal?: AbortSignal,
 ): Promise<unknown> {
+  // Combino o cancelamento da tela com um prazo máximo para a conexão com a API.
   const timeout = AbortSignal.timeout(15000)
   let response: Response
   try {
@@ -46,6 +49,7 @@ async function request(
       0,
     )
   }
+  // DELETE bem-sucedido não tem corpo JSON para decodificar.
   if (response.status === 204) return undefined
   const body: unknown = await response.json().catch(() => null)
   if (!response.ok) {

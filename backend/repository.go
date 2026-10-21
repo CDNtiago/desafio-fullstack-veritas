@@ -15,7 +15,7 @@ import (
 	"unicode/utf8"
 )
 
-// JSONRepository serializes read-modify-write operations for one process and one file.
+// JSONRepository coordena leitura, alteração e gravação em um processo por arquivo.
 type JSONRepository struct {
 	mu    sync.RWMutex
 	path  string
@@ -32,7 +32,7 @@ func OpenJSONRepository(path string) (*JSONRepository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read tasks: %w", err)
 	}
-	// encoding/json replaces malformed UTF-8; reject it to preserve corrupted data.
+	// encoding/json substituiria UTF-8 inválido; recuso o arquivo para preservar os bytes.
 	if !utf8.Valid(data) {
 		return nil, errors.New("task file contains invalid UTF-8")
 	}
@@ -44,6 +44,7 @@ func OpenJSONRepository(path string) (*JSONRepository, error) {
 	if err := decoder.Decode(new(any)); err != io.EOF || s.tasks == nil {
 		return nil, errors.New("task file must contain exactly one JSON array")
 	}
+	// JSON bem formado ainda pode conter tarefas inválidas ou IDs repetidos.
 	seen := make(map[string]bool, len(s.tasks))
 	for _, t := range s.tasks {
 		input, err := Validate(Input{Title: t.Title, Description: t.Description, Status: t.Status})
@@ -71,10 +72,12 @@ func (s *JSONRepository) List(ctx context.Context) ([]Task, error) {
 	}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	// A cópia evita que quem recebe a lista altere o slice mantido pelo repositório.
 	return append([]Task{}, s.tasks...), nil
 }
 
 func (s *JSONRepository) Create(ctx context.Context, t Task) (Task, error) {
+	// O bloqueio cobre também a gravação, evitando sobrescrever alterações concorrentes.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for _, existing := range s.tasks {
@@ -82,6 +85,7 @@ func (s *JSONRepository) Create(ctx context.Context, t Task) (Task, error) {
 			return Task{}, errors.New("duplicate generated id")
 		}
 	}
+	// Preparo outra lista; uma falha de persistência não deve alterar o estado atual.
 	next := append(append([]Task{}, s.tasks...), t)
 	if err := s.commit(ctx, next); err != nil {
 		return Task{}, err
@@ -98,7 +102,7 @@ func (s *JSONRepository) Update(ctx context.Context, id string, input Input, now
 			continue
 		}
 		t.Title, t.Description, t.Status = input.Title, input.Description, input.Status
-		// Keep timestamps monotonic if the wall clock moves backwards.
+		// Evito retroceder updatedAt se o relógio do sistema voltar.
 		if now.After(t.UpdatedAt) {
 			t.UpdatedAt = now
 		}
@@ -125,7 +129,7 @@ func (s *JSONRepository) Delete(ctx context.Context, id string) error {
 	return ErrNotFound
 }
 
-// Publish in memory only after persistence succeeds. Caller holds the write lock.
+// commit publica em memória só depois de salvar; quem chama deve manter o bloqueio de escrita.
 func (s *JSONRepository) commit(ctx context.Context, next []Task) error {
 	if err := ctx.Err(); err != nil {
 		return err
@@ -147,6 +151,7 @@ func writeSnapshot(path string, data []byte) error {
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return err
 	}
+	// O temporário fica no mesmo diretório para permitir a substituição no mesmo volume.
 	f, err := os.CreateTemp(dir, ".tasks-*.tmp")
 	if err != nil {
 		return err
@@ -162,6 +167,6 @@ func writeSnapshot(path string, data []byte) error {
 	if err := f.Close(); err != nil {
 		return err
 	}
-	// Never remove the existing file first. Rename is not guaranteed atomic on Windows.
+	// Não apago o arquivo válido antes de substituir; Rename não garante atomicidade no Windows.
 	return os.Rename(f.Name(), path)
 }

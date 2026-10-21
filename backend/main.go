@@ -27,6 +27,7 @@ func main() {
 	}
 }
 func run(logger *slog.Logger) error {
+	// Valido as origens do CORS na inicialização para detectar erros de configuração.
 	origins := strings.Split(env("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"), ",")
 	for i, origin := range origins {
 		origin = strings.TrimSpace(origin)
@@ -36,10 +37,12 @@ func run(logger *slog.Logger) error {
 		}
 		origins[i] = origin
 	}
+	// Só inicio a API depois de carregar e validar o arquivo de tarefas.
 	repo, err := OpenJSONRepository(env("TASKS_FILE", "data/tasks.json"))
 	if err != nil {
 		return err
 	}
+	// Limito o tempo de leitura/escrita e os cabeçalhos de cada conexão HTTP.
 	server := &http.Server{
 		Addr:              env("HTTP_ADDR", "127.0.0.1:8080"),
 		Handler:           NewHandler(NewService(repo), origins, logger),
@@ -56,6 +59,7 @@ func run(logger *slog.Logger) error {
 			return err
 		}
 	case <-ctx.Done():
+		// Ao encerrar, dou prazo para concluir as requisições que já estão em andamento.
 		shutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		return server.Shutdown(shutdown)

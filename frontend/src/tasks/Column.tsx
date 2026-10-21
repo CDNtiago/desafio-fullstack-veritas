@@ -25,6 +25,7 @@ export function Column({
   loading: boolean
   children: ReactNode
 }) {
+  // O destino do arraste usa o mesmo status enviado à API, inclusive em colunas vazias.
   const { ref, isDropTarget } = useDroppable({ id: status })
   return (
     <section

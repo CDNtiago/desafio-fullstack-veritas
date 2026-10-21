@@ -13,6 +13,7 @@ export interface Task {
   createdAt: string
   updatedAt: string
 }
+// O formulário envia apenas os campos editáveis; ID e datas vêm da API.
 export type TaskInput = Pick<Task, 'title' | 'description' | 'status'>
 export type FieldErrors = Partial<Record<keyof TaskInput, string>>
 
@@ -23,6 +24,7 @@ export function isStatus(value: unknown): value is Status {
 }
 export function validate(input: TaskInput): FieldErrors {
   const errors: FieldErrors = {}
+  // Array.from conta pontos de código, mantendo os limites coerentes com as runas do Go.
   if (
     Array.from(input.title.trim()).length < 1 ||
     Array.from(input.title.trim()).length > 120
@@ -35,6 +37,7 @@ export function validate(input: TaskInput): FieldErrors {
   return errors
 }
 export function sortTasks(tasks: Task[]): Task[] {
+  // Ordeno uma cópia para preservar o estado React; mover só altera o status da tarefa.
   return [...tasks].sort(
     (a, b) =>
       a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id),

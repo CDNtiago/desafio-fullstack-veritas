@@ -17,6 +17,7 @@ export function Modal({
 }) {
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => {
+    // O dialog nativo mantém a navegação na janela; ao fechar, restauro o foco anterior.
     const previous = document.activeElement
     const dialog = ref.current
     dialog?.showModal()

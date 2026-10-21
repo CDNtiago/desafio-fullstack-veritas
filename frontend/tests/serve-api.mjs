@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
-// Fresh OS temporary directory per run: never reuse the user's data file.
+// Cada execução usa um diretório temporário próprio, sem reutilizar os dados da demonstração.
 const directory = mkdtempSync(join(tmpdir(), 'veritas-e2e-'))
 const binary = join(directory, process.platform === 'win32' ? 'api.exe' : 'api')
 const cwd = fileURLToPath(new URL('../../backend/', import.meta.url))

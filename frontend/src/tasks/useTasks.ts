@@ -14,7 +14,9 @@ export function useTasks() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [pending, setPending] = useState<string | null>(null)
+  // A ref bloqueia outro envio imediatamente, antes do próximo render da interface.
   const busy = useRef(false)
+  // Uma consulta antiga não pode substituir o resultado de uma operação mais recente.
   const revision = useRef(0)
 
   const reload = useCallback(async (signal?: AbortSignal) => {
@@ -55,11 +57,13 @@ export function useTasks() {
     }
     window.addEventListener('focus', onFocus)
     return () => {
+      // Cancelo a carga e removo o evento ao desmontar, inclusive no StrictMode.
       controller.abort()
       window.removeEventListener('focus', onFocus)
     }
   }, [reload])
 
+  // Centralizo o ciclo de gravação para manter bloqueio e feedback iguais entre as ações.
   async function mutate<T>(
     key: string,
     operation: () => Promise<T>,
@@ -75,6 +79,7 @@ export function useTasks() {
     setError('')
     setNotice('')
     const previous = tasks
+    // Só a movimentação antecipa o resultado visual; o servidor confirma o estado definitivo.
     if (optimistic) setTasks(optimistic)
     try {
       const result = await operation()
@@ -82,11 +87,11 @@ export function useTasks() {
       setNotice(message)
     } catch (error) {
       if (optimistic) setTasks(previous)
-      // A lost response may still have persisted. Reconcile without retrying a mutation.
+      // A resposta pode se perder depois de salvar. Consulto a API sem repetir a mutação.
       try {
         setTasks(sortTasks(await tasksAPI.list()))
       } catch {
-        /* Keep the last confirmed snapshot. */
+        /* Sem reconciliação, mantenho a lista anterior para permitir nova tentativa consciente. */
       }
       throw error
     } finally {

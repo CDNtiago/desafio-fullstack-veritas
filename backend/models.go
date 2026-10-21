@@ -29,11 +29,14 @@ type Task struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+// Input contém somente os campos editáveis; ID e datas pertencem ao servidor.
 type Input struct{ Title, Description, Status string }
 
+// Validate centraliza as regras usadas pelo serviço e pela leitura do arquivo.
 func Validate(input Input) (Input, error) {
 	input.Title = strings.TrimSpace(input.Title)
 	fields := map[string]string{}
+	// Conto pontos de código Unicode, como no frontend, em vez de bytes UTF-8.
 	if n := utf8.RuneCountInString(input.Title); n < 1 || n > 120 {
 		fields["title"] = "Informe um título de 1 a 120 caracteres."
 	}

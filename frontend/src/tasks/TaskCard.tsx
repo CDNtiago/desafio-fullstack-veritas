@@ -18,6 +18,7 @@ export function TaskCard({
   onDelete: () => void
   onMove: (status: Status) => void
 }) {
+  // Mantenho um puxador focável para arraste por teclado, além do corpo usado pelo ponteiro.
   const { ref, handleRef, isDragging } = useDraggable({
     id: task.id,
     disabled: busy,
@@ -43,6 +44,7 @@ export function TaskCard({
           <Icon name="grip" />
         </button>
       </div>
+      {/* O conteúdo da tarefa é texto React, sem interpretação de HTML enviado pelo usuário. */}
       <h3>{task.title}</h3>
       {task.description ? (
         <p className={styles.description}>{task.description}</p>

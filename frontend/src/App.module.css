@@ -32,6 +32,7 @@
     opacity 180ms ease,
     transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* Mantenho o menu no layout durante a transição para recolher sem um corte abrupto. */
 .sidebarCollapsed .sidebar {
   width: 0;
   flex-basis: 0;
@@ -654,6 +655,7 @@
   color: var(--color-text);
   font-size: 13px;
 }
+/* O campo mantém a altura; o texto rola dentro dele conforme o cursor avança. */
 .fields textarea {
   height: 128px;
   min-height: 128px;

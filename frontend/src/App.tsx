@@ -31,8 +31,10 @@ const accessibility = Accessibility.configure({
   },
 })
 
+// O corpo do cartão ativa o arraste; a proteção padrão preserva botões e seletor de status.
 const cardPointerSensor = PointerSensor.configure({
   activatorElements: (source) => (source.element ? [source.element] : []),
+  // No toque, aguardo um pouco para distinguir o arraste de um gesto de rolagem.
   activationConstraints: (event) =>
     event.pointerType === 'touch'
       ? [new PointerActivationConstraints.Delay({ value: 220, tolerance: 6 })]
@@ -40,6 +42,7 @@ const cardPointerSensor = PointerSensor.configure({
 })
 
 export function App() {
+  // O hook coordena as tarefas; aqui mantenho o estado de apresentação da tela.
   const board = useTasks()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () =>
@@ -199,6 +202,7 @@ export function App() {
               accessibility,
             ]}
             onDragEnd={(event) => {
+              // Arraste e seletor usam a mesma atualização; cancelamentos não enviam PUT.
               if (event.canceled || !isStatus(event.operation.target?.id))
                 return
               const task = board.tasks.find(

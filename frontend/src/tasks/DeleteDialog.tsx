@@ -21,6 +21,7 @@ export function DeleteDialog({
     if (busy) return
     setError('')
     try {
+      // Só fecho a confirmação depois que o servidor confirma a exclusão.
       await onDelete()
       onClose()
     } catch (error) {

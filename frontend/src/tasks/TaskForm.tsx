@@ -38,10 +38,12 @@ export function TaskForm({
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     if (busy) return
+    // A validação local dá retorno rápido; a API repete as regras para proteger os dados.
     const fields = validate(input)
     setErrors(fields)
     setError('')
     if (Object.keys(fields).length) {
+      // Levo o foco ao primeiro campo inválido para permitir a correção pelo teclado.
       if (fields.title) titleRef.current?.focus()
       else if (fields.description) descriptionRef.current?.focus()
       return
@@ -50,6 +52,7 @@ export function TaskForm({
       await onSave({ ...input, title: input.title.trim() })
       onClose()
     } catch (error) {
+      // Mantenho os campos e a janela abertos se a gravação falhar.
       setError(errorMessage(error))
     }
   }

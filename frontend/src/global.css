@@ -1,7 +1,7 @@
 @import url('./reset.css');
 
 :root {
-  /* Brand colors observed on https://carreiras.veritas.law/ on 2026-10-20. */
+  /* Paleta observada em https://carreiras.veritas.law/ em 20/10/2026. */
   --color-brand-ink: #02141b;
   --color-brand-petrol: #071f27;
   --color-brand-gold: #d4af78;
