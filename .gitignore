@@ -16,13 +16,3 @@ backend/bin/
 .DS_Store
 Thumbs.db
 tmp/
-
-# Uso apenas local para estudar e preparar a apresentação técnica.
-/estudo-local/
-
-# Mantenho aqui as anotações e materiais de estudo; publico só os diagramas e suas fontes.
-docs/*
-!docs/user-flow.png
-!docs/user-flow.mmd
-!docs/data-flow.png
-!docs/data-flow.mmd
